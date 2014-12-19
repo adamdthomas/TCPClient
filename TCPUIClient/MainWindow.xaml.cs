@@ -258,7 +258,7 @@ namespace TCPUIClient
         {
             try
             {
-
+                //Test Github
                 cmd = "<VIDEOKILL>";
                 byte[] msg = Encoding.UTF8.GetBytes(cmd);
                 data = "";
