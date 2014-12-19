@@ -236,7 +236,7 @@ namespace TCPUIClient
                     data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
                     WriteToLog("Server says: " + data);
                     string[] AddressParts = data.Split(':');
-                    string VideoCMDString = @"cd c:\gstreamer\1.0\x86\bin & gst-launch-1.0 -v tcpclientsrc host=" + AddressParts[0] + " port=" + AddressParts[1] + "  ! gdpdepay !  rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false";
+                    string VideoCMDString = @"cd c:\gstreamer\1.0\x86\bin & gst-launch-1.0 -v tcpclientsrc host=" + AddressParts[0] + " port=" + AddressParts[1] + "  ! gdpdepay !  rtph264depay ! avdec_h264 ! videoconvert ! videoflip method=horizontal-flip ! autovideosink sync=false";
                     RunCMD(VideoCMDString);
                     WriteToLog("Attempting to connect to video server now...");
 
