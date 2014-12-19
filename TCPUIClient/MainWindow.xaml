@@ -1,0 +1,52 @@
+﻿<Window x:Name="wnMain" x:Class="TCPUIClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TCP Socket Client v1.4.1" Height="416.857" Width="588.467" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize" ShowInTaskbar="False">
+    <Grid Height="398" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF27211C" Offset="0.3"/>
+                <GradientStop Color="#FF636363" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="103*"/>
+            <ColumnDefinition Width="238*"/>
+            <ColumnDefinition Width="151*"/>
+            <ColumnDefinition Width="90*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox x:Name="txMessage" HorizontalAlignment="Left" Height="52" Margin="10,236,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="269" TextChanged="txMessage_TextChanged" KeyDown="txMessage_KeyDown" Grid.ColumnSpan="2"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="107.2,83,0,0" VerticalAlignment="Top" Width="55" Height="24" Click="btnConnect_Click" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <Button x:Name="btnDisconnect" Content="Disconnect" HorizontalAlignment="Left" Margin="17,83,0,0" VerticalAlignment="Top" Width="69" Height="24" Click="btnDisconnect_Click" Grid.Column="3"/>
+        <TextBox x:Name="txServername" HorizontalAlignment="Left" Height="23" Margin="57.2,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="174" Text="192.168.1.110" Grid.ColumnSpan="2" Grid.Column="2" LostFocus="txServername_LostFocus" KeyDown="txServername_KeyDown"/>
+        <Label Content="Server Name:" HorizontalAlignment="Left" Margin="57.2,10,0,0" VerticalAlignment="Top" Width="78" Height="26" Foreground="White" Grid.Column="2"/>
+        <TextBox x:Name="txPort" HorizontalAlignment="Left" Height="24" Margin="57.2,83,0,0" TextWrapping="Wrap" Text="3333" VerticalAlignment="Top" Width="45" Grid.Column="2" TextChanged="txPort_TextChanged" KeyDown="txPort_KeyDown"/>
+        <Label Content="Port:" HorizontalAlignment="Left" Margin="57.2,58,0,0" VerticalAlignment="Top" Width="119" Height="25" Foreground="White" Grid.ColumnSpan="2" Grid.Column="2"/>
+        <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" Margin="180.933,236,0,0" VerticalAlignment="Top" Width="99" Height="23" Click="btnSend_Click" Grid.ColumnSpan="2" Grid.Column="1"/>
+        <TextBox x:Name="txMain" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="193" Margin="11,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="373" Grid.ColumnSpan="3"/>
+        <Label Content="Log" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label Content="Status:" Margin="58.2,210,47,0" VerticalAlignment="Top" Foreground="White" Grid.Column="2"/>
+        <TextBox x:Name="txStatus" HorizontalAlignment="Left" Height="52" Margin="57.2,236,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="168" Grid.ColumnSpan="2" Grid.Column="2" RenderTransformOrigin="0.554,-0.713"/>
+        <CheckBox x:Name="cbGameEnabled" Content="Enable Gamepad" HorizontalAlignment="Left" Margin="57.2,150,0,0" VerticalAlignment="Top" Click="cbGameEnabled_Click" Foreground="White" Grid.Column="2" Width="107" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="cbOutputGPData" Content="Keep Log File" Margin="57,198,73,180" Click="cbOutputGPData_Click" Foreground="White" Grid.Column="2" Checked="cbOutputGPData_Checked" Grid.ColumnSpan="2"/>
+        <Label Content="Dead Zone" HorizontalAlignment="Left" Margin="7,322,0,0" VerticalAlignment="Top" Foreground="White" Width="72"/>
+        <Button Grid.ColumnSpan="2" Content="Clear Log" HorizontalAlignment="Left" Margin="180.933,265,0,0" VerticalAlignment="Top" Width="99" Height="23" Click="Button_Click" Grid.Column="1"/>
+        <Slider x:Name="slDeadZone" HorizontalAlignment="Left" Margin="84,326,0,0" VerticalAlignment="Top" Width="475" Maximum="20000" ValueChanged="Slider_ValueChanged" Cursor="Hand" Grid.ColumnSpan="4"/>
+        <Slider x:Name="slTXRate" HorizontalAlignment="Left" Margin="84,297,0,0" VerticalAlignment="Top" Width="475" Grid.ColumnSpan="4" Height="24" Maximum="750" ValueChanged="Slider_ValueChanged_1" Cursor="Hand"/>
+        <Label Content="TX Rate" HorizontalAlignment="Left" Margin="7,293,0,0" VerticalAlignment="Top" Foreground="White" Width="52" Cursor="Hand"/>
+        <Slider x:Name="slCenter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="475" Margin="84,353,0,0" Grid.ColumnSpan="4" Maximum="38250" Minimum="23250" Value="30750" Cursor="Hand" SmallChange="1" ValueChanged="slCenter_ValueChanged"/>
+        <Label x:Name="lbCenter" Content="Center" HorizontalAlignment="Left" Margin="7,349,0,0" VerticalAlignment="Top" Foreground="White" Width="52" Cursor="Hand" MouseLeftButtonUp="lbCenter_MouseLeftButtonUp"/>
+        <CheckBox x:Name="cbTranslate" Content="Translate Gamepad Data" Grid.Column="2" HorizontalAlignment="Left" Margin="57,166,0,0" VerticalAlignment="Top" Foreground="White" Grid.ColumnSpan="2" Width="162" Click="cbTranslate_Click"/>
+        <Expander Grid.Column="3" Header="Expander" HorizontalAlignment="Left" Height="100" Margin="0,398,0,-100" VerticalAlignment="Top">
+            <Grid Background="#FFE5E5E5"/>
+        </Expander>
+        <ComboBox x:Name="cbGamepadType" Grid.Column="2" HorizontalAlignment="Left" Margin="57.2,118,0,0" VerticalAlignment="Top" Width="180" Height="25" Grid.ColumnSpan="2" SelectedIndex="0" FontSize="10.5" SelectionChanged="cbGamepadType_SelectionChanged">
+            <ComboBoxItem Content="Server Controlled Gamepad UDP"/>
+            <ComboBoxItem Content="Server Controlled Gamepad TCP"/>
+            <ComboBoxItem Content="Static Gamepad"/>
+        </ComboBox>
+        <CheckBox x:Name="cbVideo" Content="Enable Video" Grid.Column="2" HorizontalAlignment="Left" Margin="57,182,0,0" VerticalAlignment="Top" Foreground="White" Click="cbVideo_Click"/>
+
+    </Grid>
+</Window>
