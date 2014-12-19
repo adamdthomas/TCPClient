@@ -26,7 +26,7 @@
         <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" Margin="180.933,236,0,0" VerticalAlignment="Top" Width="99" Height="23" Click="btnSend_Click" Grid.ColumnSpan="2" Grid.Column="1"/>
         <TextBox x:Name="txMain" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="193" Margin="11,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="373" Grid.ColumnSpan="3"/>
         <Label Content="Log" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Foreground="White"/>
-        <Label Content="Status:" Margin="58.2,210,47,0" VerticalAlignment="Top" Foreground="White" Grid.Column="2"/>
+        <Label Content="Status:" Margin="52.4,213,52.8,0" VerticalAlignment="Top" Foreground="White" Grid.Column="2"/>
         <TextBox x:Name="txStatus" HorizontalAlignment="Left" Height="52" Margin="57.2,236,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="168" Grid.ColumnSpan="2" Grid.Column="2" RenderTransformOrigin="0.554,-0.713"/>
         <CheckBox x:Name="cbGameEnabled" Content="Enable Gamepad" HorizontalAlignment="Left" Margin="57.2,150,0,0" VerticalAlignment="Top" Click="cbGameEnabled_Click" Foreground="White" Grid.Column="2" Width="107" Grid.ColumnSpan="2"/>
         <CheckBox x:Name="cbOutputGPData" Content="Keep Log File" Margin="57,198,73,180" Click="cbOutputGPData_Click" Foreground="White" Grid.Column="2" Checked="cbOutputGPData_Checked" Grid.ColumnSpan="2"/>
