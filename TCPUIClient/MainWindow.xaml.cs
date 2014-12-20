@@ -191,25 +191,7 @@ namespace TCPUIClient
             }
         }
 
-        private void txServername_LostFocus(object sender, RoutedEventArgs e)
-        {
-            dicConfig["servername"] = txServername.Text;
-        }
-
-        private void txPort_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            dicConfig["port"] = txPort.Text;
-        }
-
-        private void txDeadZone_TextChanged(object sender, TextChangedEventArgs e)
-        {
-          
-        }
-
-        private void cbOutputGPData_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
+       
 
         private void Grid_Initialized(object sender, EventArgs e)
         {
@@ -1154,6 +1136,16 @@ namespace TCPUIClient
             
         }
 
+        private void txServername_LostFocus(object sender, RoutedEventArgs e)
+        {
+            dicConfig["servername"] = txServername.Text;
+        }
+
+        private void txPort_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            dicConfig["port"] = txPort.Text;
+        }
+
         private void lbCenter_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             slCenter.Value = 30750;
@@ -1166,6 +1158,13 @@ namespace TCPUIClient
 
             #region Not Used
             private void txDeadZone_LostFocus(object sender, RoutedEventArgs e)
+            {
+            }
+            private void txDeadZone_TextChanged(object sender, TextChangedEventArgs e)
+            {
+            }
+
+            private void cbOutputGPData_Checked(object sender, RoutedEventArgs e)
             {
             }
 
@@ -1195,43 +1194,43 @@ namespace TCPUIClient
 
         #endregion
 
-            private void txPort_KeyDown(object sender, KeyEventArgs e)
+        private void txPort_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Return)
             {
-                if (e.Key == System.Windows.Input.Key.Return)
+                Connect();
+            }
+        }
+
+
+
+        private void cbVideo_Click(object sender, RoutedEventArgs e)
+        {
+            VideoEnabled = cbVideo.IsChecked.Value;
+            if (CurrentlyConnected)
+            {
+                if (VideoEnabled)
                 {
-                    Connect();
+                    RunVideo();
                 }
             }
-
-
-
-            private void cbVideo_Click(object sender, RoutedEventArgs e)
+            else
             {
-                VideoEnabled = cbVideo.IsChecked.Value;
-                if (CurrentlyConnected)
-                {
-                    if (VideoEnabled)
-                    {
-                        RunVideo();
-                    }
-                }
-                else
-                {
-                    txStatus.Text = "Warning!";
-                    WriteToLog("You must be connected to the main server if you would like to stream video!");
-                    cbVideo.IsChecked = false;
+                txStatus.Text = "Warning!";
+                WriteToLog("You must be connected to the main server if you would like to stream video!");
+                cbVideo.IsChecked = false;
 
-                }
-                if (!VideoEnabled)
-                {
-                    DisconnectVideo();
-                }
             }
-
-            private void cbGamepadType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            if (!VideoEnabled)
             {
-                dicConfig["gamepadmode"] = cbGamepadType.SelectedIndex.ToString();
-            }     
+                DisconnectVideo();
+            }
+        }
+
+        private void cbGamepadType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            dicConfig["gamepadmode"] = cbGamepadType.SelectedIndex.ToString();
+        }     
         #endregion
     }
 
