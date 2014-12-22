@@ -21,7 +21,7 @@
         <TextBox x:Name="txPort" HorizontalAlignment="Left" Height="24" Margin="57.2,83,0,0" TextWrapping="Wrap" Text="3333" VerticalAlignment="Top" Width="45" Grid.Column="2" TextChanged="txPort_TextChanged" KeyDown="txPort_KeyDown"/>
         <Label Content="Port:" HorizontalAlignment="Left" Margin="57.2,58,0,0" VerticalAlignment="Top" Width="119" Height="25" Foreground="White" Grid.ColumnSpan="2" Grid.Column="2"/>
         <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" Margin="180.933,236,0,0" VerticalAlignment="Top" Width="99" Height="23" Click="btnSend_Click" Grid.ColumnSpan="2" Grid.Column="1"/>
-        <TextBox x:Name="txMain" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="193" Margin="11,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="373" Grid.ColumnSpan="3"/>
+        <TextBox x:Name="txMain" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="196" Margin="11,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="373" Grid.ColumnSpan="3"/>
         <Label Content="Log" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Foreground="White"/>
         <Label Content="Status:" Margin="52.4,213,52.8,0" VerticalAlignment="Top" Foreground="White" Grid.Column="2"/>
         <TextBox x:Name="txStatus" HorizontalAlignment="Left" Height="52" Margin="57.2,236,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="168" Grid.ColumnSpan="2" Grid.Column="2" RenderTransformOrigin="0.554,-0.713"/>
