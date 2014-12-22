@@ -209,7 +209,7 @@ namespace TCPUIClient
             {
                 try
                 {
-                    cmd = "<VIDEOINFO>";
+                    cmd = "<VIDEOINFO>"; //vid cmd
                     byte[] msg = Encoding.UTF8.GetBytes(cmd);
                     data = "";
                     int bytesSent = MainSocket.Send(msg);
