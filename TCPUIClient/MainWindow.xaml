@@ -4,10 +4,7 @@
         Title="TCP Socket Client v1.4.5" Height="416.857" Width="588.467" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
     <Grid Height="398" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
         <Grid.Background>
-            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FF27211C" Offset="0.3"/>
-                <GradientStop Color="#FF636363" Offset="1"/>
-            </LinearGradientBrush>
+            <ImageBrush ImageSource="black-texture-background-wallpaper-sfv11hls.jpg"/>
         </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="103*"/>
@@ -20,7 +17,7 @@
         <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="107.2,83,0,0" VerticalAlignment="Top" Width="55" Height="24" Click="btnConnect_Click" Grid.Column="2" Grid.ColumnSpan="2"/>
         <Button x:Name="btnDisconnect" Content="Disconnect" HorizontalAlignment="Left" Margin="17,83,0,0" VerticalAlignment="Top" Width="69" Height="24" Click="btnDisconnect_Click" Grid.Column="3"/>
         <TextBox x:Name="txServername" HorizontalAlignment="Left" Height="23" Margin="57.2,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="174" Text="192.168.1.110" Grid.ColumnSpan="2" Grid.Column="2" LostFocus="txServername_LostFocus" KeyDown="txServername_KeyDown"/>
-        <Label Content="Server Name:" HorizontalAlignment="Left" Margin="57.2,10,0,0" VerticalAlignment="Top" Width="78" Height="26" Foreground="White" Grid.Column="2"/>
+        <Label Content="Server Name:" HorizontalAlignment="Left" Margin="57.329,10,0,0" VerticalAlignment="Top" Width="92" Height="26" Foreground="White" Grid.Column="2"/>
         <TextBox x:Name="txPort" HorizontalAlignment="Left" Height="24" Margin="57.2,83,0,0" TextWrapping="Wrap" Text="3333" VerticalAlignment="Top" Width="45" Grid.Column="2" TextChanged="txPort_TextChanged" KeyDown="txPort_KeyDown"/>
         <Label Content="Port:" HorizontalAlignment="Left" Margin="57.2,58,0,0" VerticalAlignment="Top" Width="119" Height="25" Foreground="White" Grid.ColumnSpan="2" Grid.Column="2"/>
         <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" Margin="180.933,236,0,0" VerticalAlignment="Top" Width="99" Height="23" Click="btnSend_Click" Grid.ColumnSpan="2" Grid.Column="1"/>
@@ -47,7 +44,7 @@
             <ComboBoxItem Content="Static Gamepad"/>
         </ComboBox>
         <CheckBox x:Name="cbVideo" Content="Enable Video" Grid.Column="2" HorizontalAlignment="Left" Margin="57,182,0,0" VerticalAlignment="Top" Foreground="White" Click="cbVideo_Click"/>
-        <Image HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="26" Grid.Column="3" Margin="60.329,4,0,0" Source="inward-black-help.png" Opacity="0.9" MouseLeftButtonUp="Image_MouseLeftButtonUp">
+        <Image HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="21" Grid.Column="3" Margin="59.2,4,0,0" Source="inward-black-help.png" Opacity="0.9" MouseLeftButtonUp="Image_MouseLeftButtonUp" Cursor="Help">
             <Image.OpacityMask>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
