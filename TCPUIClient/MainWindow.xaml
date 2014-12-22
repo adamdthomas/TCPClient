@@ -47,6 +47,14 @@
             <ComboBoxItem Content="Static Gamepad"/>
         </ComboBox>
         <CheckBox x:Name="cbVideo" Content="Enable Video" Grid.Column="2" HorizontalAlignment="Left" Margin="57,182,0,0" VerticalAlignment="Top" Foreground="White" Click="cbVideo_Click"/>
+        <Image HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="26" Grid.Column="3" Margin="60.329,4,0,0" Source="inward-black-help.png" Opacity="0.9" MouseLeftButtonUp="Image_MouseLeftButtonUp">
+            <Image.OpacityMask>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </LinearGradientBrush>
+            </Image.OpacityMask>
+        </Image>
 
     </Grid>
 </Window>
