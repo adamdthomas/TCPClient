@@ -67,14 +67,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TCPUIClient.exe" size="487824">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TCPUIClient.exe" size="488336">
       <assemblyIdentity name="TCPUIClient" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>tZgHdCVRUPYeXZK/tzVR5KjWbwCE8Clm1B8mkvSSMi4=</dsig:DigestValue>
+        <dsig:DigestValue>5Hn5L2NHEuwNTLBEEEot+3nmsoqkYuytGhsb0/eK1Bs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -87,13 +87,13 @@
       <dsig:DigestValue>4NNwsA/WpDXfb8q7BZ/VhUBtMvdVvAGYtYpK6EL+9S4=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="TCPUIClient.exe.config" size="187">
+  <file name="TCPUIClient.exe.config" size="182">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>xm4bo26HQ0LNVwz1vdPYtzhkpMnp2AI5i+f0b+OahTI=</dsig:DigestValue>
+      <dsig:DigestValue>PbQiHFOih9uz3RPvvsStiPKcsu3PE8/gyCn2QGUyyf4=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>
