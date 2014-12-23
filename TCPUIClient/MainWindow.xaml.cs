@@ -163,7 +163,7 @@ namespace TCPUIClient
             slTXRate.Value = double.Parse(dicConfig["txrate"]);
             slCenter.Value = double.Parse(dicConfig["center"]);
             cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
-            wnMain.Height = 330;
+            ShowGamePadAdvancedControls(false);
 
 
             //Set Variables
@@ -171,6 +171,7 @@ namespace TCPUIClient
             txRate = Int32.Parse(dicConfig["txrate"]);
             Center = Int32.Parse(dicConfig["center"]);
 
+            ShowGamePadAdvancedControls(false);
             
             
 
@@ -209,7 +210,7 @@ namespace TCPUIClient
             {
                 try
                 {
-                    cmd = "<VIDEOINFO>";
+                    cmd = "<VIDEOINFO>"; //vid cmd
                     byte[] msg = Encoding.UTF8.GetBytes(cmd);
                     data = "";
                     int bytesSent = MainSocket.Send(msg);
@@ -288,11 +289,11 @@ namespace TCPUIClient
                     GPThread.Start();
                     Thread.Sleep(1000);
                     WriteToLog(GPID);
-                    wnMain.Height = 416;
+                    
                 }
                 else
                 {
-                    wnMain.Height = 330;
+                   
                     txStatus.Text = "Gamepad Disconnected!";
                 }
             }
@@ -335,13 +336,13 @@ namespace TCPUIClient
                         GPThread.Start();
                         Thread.Sleep(1000);
                         WriteToLog(GPID);
-                        wnMain.Height = 416;
+
                         WriteToLog("Gamepad connected to: " + data);
                         txStatus.Text = "Gamepad Connected!";
                     }
                     else
                     {
-                        wnMain.Height = 330;
+
                         txStatus.Text = "Gamepad Disconnected!";
                     }
                 }
@@ -387,13 +388,13 @@ namespace TCPUIClient
                         GPThread.Start();
                         Thread.Sleep(1000);
                         WriteToLog(GPID);
-                        wnMain.Height = 416;
+
                         WriteToLog("Gamepad connected to: " + data);
                         txStatus.Text = "Gamepad Connected!";
                     }
                     else
                     {
-                        wnMain.Height = 330;
+
                         txStatus.Text = "Gamepad Disconnected!";
                     }
                 }
@@ -1011,6 +1012,18 @@ namespace TCPUIClient
          
         }
 
+        public void ShowGamePadAdvancedControls(bool ShouldTheyBeShown)
+        {
+            if (ShouldTheyBeShown)
+            {
+                wnMain.Height = 416;
+            }
+            else
+            {
+                wnMain.Height = 330;
+            }
+        }
+
         #endregion
 
         #region UI
@@ -1047,6 +1060,8 @@ namespace TCPUIClient
             GamePadEnabled = cbGameEnabled.IsChecked.Value;
             if (GamePadEnabled)
             {
+
+                ShowGamePadAdvancedControls(true);
                 if (GPT == "Server Controlled Gamepad UDP")
                 {
                     RunGamePadIndependentUDP();
@@ -1062,6 +1077,7 @@ namespace TCPUIClient
             }
             else
             {
+                ShowGamePadAdvancedControls(false);
                 DisconnectGamePad();
             }
 
@@ -1232,6 +1248,28 @@ namespace TCPUIClient
             dicConfig["gamepadmode"] = cbGamepadType.SelectedIndex.ToString();
         }     
         #endregion
+
+        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            WriteToLog(@"###SERVER COMMANDS###");
+            WriteToLog(@"<GAMEPADINFO>  <---Tells server to open up UDP/TCP connection (If selected) to accept controller commands.");
+            WriteToLog(@"Server returns: ip address and port in the following format - 192.168.1.100:4000");
+            WriteToLog(@"<GAMEPADKILL>  <---Tells server to shut down the gamepad connection/thread");
+            WriteToLog(@"Server returns: <GAMEPADKILL-OK>");
+            WriteToLog(@"<VIDEOINFO>  <---Tells server to open up the video stream");
+            WriteToLog(@"Server returns: ip addrss and port of the video stream in the following format - 192.168.1.100:4000");
+            WriteToLog(@"<VIDEOKILL>  <---Tells server to close the video stream");
+            WriteToLog(@"Server returns: <VIDEOKILL-OK>");
+            WriteToLog(@"<SERVERKILLCONNECTION>  <---Tells server to shut down main TCP connection to the client");
+            WriteToLog(@"Server returns: Goodbye!");
+            WriteToLog(@"<SETIPLOCAL>  <---Sets the IP to whatever the controllers's current IP is. This is the default and you would only use this command to switch back changes you made using other IP commands.");
+            WriteToLog(@"Server returns: IP address");
+            WriteToLog(@"<SETIPDOMAIN> <---Sets the IP/domain name to your defualt domain loaded in your device.");
+            WriteToLog(@"Server returns: IP address or domain address");
+            WriteToLog(@"<SETIP=76.43.746.237> or <SETIP=www.robocop.com> <--Overrides the return IP to anything you send it.");
+            WriteToLog(@"Server returns: IP address or domain address");
+            txStatus.Text = "You're welcome...";
+        }
     }
 
       
