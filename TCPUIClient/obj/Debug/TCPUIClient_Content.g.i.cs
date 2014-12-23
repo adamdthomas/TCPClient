@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("aha-soft-desktop-halloween-skeleton.ico")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("black-texture-background-wallpaper-sfv11hls.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("silk-satin-cloth-black-folds-texture.jpg")]
 
 
