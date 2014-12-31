@@ -1074,11 +1074,7 @@ namespace TCPUIClient
         {
             if (ShouldTheyBeShown)
             {
-                wnMain.Height = 416;
-            }
-            else
-            {
-                wnMain.Height = 330;
+                //ignoring due to new UI layout
             }
         }
 
