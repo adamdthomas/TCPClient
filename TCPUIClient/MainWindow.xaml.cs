@@ -100,6 +100,7 @@ namespace TCPUIClient
 
         public void GetConfigData()
         {
+            //Set up config file with defualt values if it doesnt exist
             System.IO.Directory.CreateDirectory(LogPath);
             if (!File.Exists(ConfigPath))
             {
@@ -118,10 +119,13 @@ namespace TCPUIClient
                 dicConfig["txrate"] = "0";
                 dicConfig["center"] = "30750";
                 dicConfig["gamepadmode"] = "0";
+                dicConfig["videomode"] = "0";
+                dicConfig["foscampassword"] = "0";
                 SetConfigData();
 
             }
 
+            //Pull all values from the config file. 
             System.Collections.Generic.IEnumerable<String> lines = File.ReadLines(ConfigPath);
             
 
@@ -172,6 +176,7 @@ namespace TCPUIClient
             slTXRate.Value = double.Parse(dicConfig["txrate"]);
             slCenter.Value = double.Parse(dicConfig["center"]);
             cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
+            cbVideoType.SelectedIndex = int.Parse(dicConfig["videomode"]);
             ShowGamePadAdvancedControls(false);
 
 
@@ -213,23 +218,52 @@ namespace TCPUIClient
 
         #region VideoFunctions
 
+        public void RunVideo()
+        {
+            if(cbVideoType.SelectedValue == "Foscam")
+            {
+                
+            }
+            else if(cbVideoType.SelectedValue == "GStreamer")
+            {
+                RunVideoGS();
+            }
+        }
+
+        public void DisconnectVideo()
+        {
+            if (cbVideoType.SelectedValue == "Foscam")
+            {
+
+            }
+            else if (cbVideoType.SelectedValue == "GStreamer")
+            {
+                DisconnectVideoFS();
+            }
+        }
+
+        public string[] GetVideoInfo()
+        {
+            cmd = "<VIDEOINFO>"; //vid cmd
+            byte[] msg = Encoding.UTF8.GetBytes(cmd);
+            data = "";
+            int bytesSent = MainSocket.Send(msg);
+            WriteToLog("Client says: " + cmd);
+            int bytesRec = MainSocket.Receive(bytes);
+            data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+            WriteToLog("Server says: " + data);
+            return data.Split(':');
+        }
+
         #region GStreamer
 
-        public void RunVideo()
+        public void RunVideoGS()
         {
             if (CurrentlyConnected)
             {
                 try
                 {
-                    cmd = "<VIDEOINFO>"; //vid cmd
-                    byte[] msg = Encoding.UTF8.GetBytes(cmd);
-                    data = "";
-                    int bytesSent = MainSocket.Send(msg);
-                    WriteToLog("Client says: " + cmd);
-                    int bytesRec = MainSocket.Receive(bytes);
-                    data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                    WriteToLog("Server says: " + data);
-                    string[] AddressParts = data.Split(':');
+                    string[] AddressParts = GetVideoInfo();
                     string VideoCMDString = @"cd c:\gstreamer\1.0\x86\bin & gst-launch-1.0 -v tcpclientsrc host=" + AddressParts[0] + " port=" + AddressParts[1] + "  ! gdpdepay !  rtph264depay ! avdec_h264 ! videoconvert ! videoflip method=horizontal-flip ! autovideosink sync=false";
                     RunCMD(VideoCMDString);
                     WriteToLog("Attempting to connect to video server now...");
@@ -248,7 +282,7 @@ namespace TCPUIClient
             }
         }
 
-        public void DisconnectVideo()
+        public void DisconnectVideoFS()
         {
             try
             {
@@ -281,11 +315,13 @@ namespace TCPUIClient
         public void FoscamLogin(string Address, string UserName, string Password)
         {
             WriteToLog("Attempting to log into Foscam viewer...");
+            string[] AddressParts = GetVideoInfo();
+
             WebAutomationToolkit.Web.WebDriver = new InternetExplorerDriver();
-            WebAutomationToolkit.Web.NavigateToURL(Address);
+            WebAutomationToolkit.Web.NavigateToURL(AddressParts[0] + ":" + AddressParts[1]);
             WebAutomationToolkit.Utilities.Wait(2, 500);
             WebAutomationToolkit.Web.Sync.SyncByID("username", 10);
-            WebAutomationToolkit.Web.Edit.SetTextByCSSPath("#passwd", Password);
+            WebAutomationToolkit.Web.Edit.SetTextByCSSPath("#passwd", dicConfig["foscampassword"]);
             WebAutomationToolkit.Web.Button.ClickByCSSPath("#login_ok");
             WebAutomationToolkit.Web.Sync.SyncByCSSPath("#LiveMenu", 10);
             WebAutomationToolkit.Web.Button.ClickByCSSPath("#LiveMenu");
@@ -1337,6 +1373,16 @@ namespace TCPUIClient
         }
 
         #endregion
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void cbVideoType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            dicConfig["videomode"] = cbVideoType.SelectedIndex.ToString();
+        }
 
     }
 
