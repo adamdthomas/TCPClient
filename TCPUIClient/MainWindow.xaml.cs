@@ -10,8 +10,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+
 using System.Threading;
 using System.Threading.Tasks;
+
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -22,6 +24,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
+using OpenQA.Selenium.IE;
+using System.Runtime.InteropServices;
+
 
 
 
@@ -75,6 +81,9 @@ namespace TCPUIClient
         public static Int32 Center = 0;
         public static string ConfigPath = @"C:\Logs\config.txt";
         public static Dictionary<string, string> dicConfig = new Dictionary<string, string>();
+
+        public enum Direction { UP, DOWN, LEFT, RIGHT };
+
 
 
         #endregion
@@ -204,6 +213,8 @@ namespace TCPUIClient
 
         #region VideoFunctions
 
+        #region GStreamer
+
         public void RunVideo()
         {
             if (CurrentlyConnected)
@@ -262,6 +273,53 @@ namespace TCPUIClient
             cbVideo.IsChecked = false;
 
         }
+
+        #endregion
+
+        #region Foscam
+
+        public void FoscamLogin(string Address, string UserName, string Password)
+        {
+            WriteToLog("Attempting to log into Foscam viewer...");
+            WebAutomationToolkit.Web.WebDriver = new InternetExplorerDriver();
+            WebAutomationToolkit.Web.NavigateToURL(Address);
+            WebAutomationToolkit.Utilities.Wait(2, 500);
+            WebAutomationToolkit.Web.Sync.SyncByID("username", 10);
+            WebAutomationToolkit.Web.Edit.SetTextByCSSPath("#passwd", Password);
+            WebAutomationToolkit.Web.Button.ClickByCSSPath("#login_ok");
+            WebAutomationToolkit.Web.Sync.SyncByCSSPath("#LiveMenu", 10);
+            WebAutomationToolkit.Web.Button.ClickByCSSPath("#LiveMenu");
+            WebAutomationToolkit.Utilities.Wait(5);
+            WriteToLog("Webcam viewer has been launched successfully...");
+        }
+        
+        public void MoveCamera(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.UP:
+                    WebAutomationToolkit.Web.Button.ClickByID(@"live_yt1_ptzMoveUp");
+                    WriteToLog("Camera move: UP");
+                    break;
+                case Direction.DOWN:
+                    WebAutomationToolkit.Web.Button.ClickByID(@"live_yt1_ptzMoveDown");
+                    WriteToLog("Camera move: DOWN");
+                    break;
+                case Direction.LEFT:
+                    WebAutomationToolkit.Web.Button.ClickByID(@"live_yt5_ptzMoveLeft");
+                    WriteToLog("Camera move: LEFT");
+                    break;
+                case Direction.RIGHT:
+                    WebAutomationToolkit.Web.Button.ClickByID(@"live_yt5_ptzMoveRight");
+                    WriteToLog("Camera move: RIGHT");
+                    break;
+                default:
+                    break;
+            }
+            WebAutomationToolkit.Utilities.Wait(0, 500);
+        }
+
+        #endregion
 
         #endregion
 
@@ -1195,6 +1253,12 @@ namespace TCPUIClient
         }
 
             #region Not Used
+
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
             private void txDeadZone_LostFocus(object sender, RoutedEventArgs e)
             {
             }
@@ -1269,12 +1333,15 @@ namespace TCPUIClient
         {
             dicConfig["gamepadmode"] = cbGamepadType.SelectedIndex.ToString();
         }     
-        #endregion
+
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             PrintHelp();
         }
+
+        #endregion
+
     }
 
       

@@ -9,7 +9,7 @@ using OpenQA.Selenium.Firefox;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
 
-namespace TCPSocketServer
+namespace TCPUIClient
 {
     class WebAutomationToolkit
     {
