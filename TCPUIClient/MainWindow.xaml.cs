@@ -1024,6 +1024,28 @@ namespace TCPUIClient
             }
         }
 
+        public void PrintHelp()
+        {
+            WriteToLog(@"###SERVER COMMANDS###");
+            WriteToLog(@"<GAMEPADINFO>  <---Tells server to open up UDP/TCP connection (If selected) to accept controller commands.");
+            WriteToLog(@"Server returns: ip address and port in the following format - 192.168.1.100:4000");
+            WriteToLog(@"<GAMEPADKILL>  <---Tells server to shut down the gamepad connection/thread");
+            WriteToLog(@"Server returns: <GAMEPADKILL-OK>");
+            WriteToLog(@"<VIDEOINFO>  <---Tells server to open up the video stream");
+            WriteToLog(@"Server returns: ip addrss and port of the video stream in the following format - 192.168.1.100:4000");
+            WriteToLog(@"<VIDEOKILL>  <---Tells server to close the video stream");
+            WriteToLog(@"Server returns: <VIDEOKILL-OK>");
+            WriteToLog(@"<SERVERKILLCONNECTION>  <---Tells server to shut down main TCP connection to the client");
+            WriteToLog(@"Server returns: Goodbye!");
+            WriteToLog(@"<SETIPLOCAL>  <---Sets the IP to whatever the controllers's current IP is. This is the default and you would only use this command to switch back changes you made using other IP commands.");
+            WriteToLog(@"Server returns: IP address");
+            WriteToLog(@"<SETIPDOMAIN> <---Sets the IP/domain name to your defualt domain loaded in your device.");
+            WriteToLog(@"Server returns: IP address or domain address");
+            WriteToLog(@"<SETIP=76.43.746.237> or <SETIP=www.robocop.com> <--Overrides the return IP to anything you send it.");
+            WriteToLog(@"Server returns: IP address or domain address");
+            txStatus.Text = "You're welcome...";
+        }
+
         #endregion
 
         #region UI
@@ -1251,24 +1273,7 @@ namespace TCPUIClient
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            WriteToLog(@"###SERVER COMMANDS###");
-            WriteToLog(@"<GAMEPADINFO>  <---Tells server to open up UDP/TCP connection (If selected) to accept controller commands.");
-            WriteToLog(@"Server returns: ip address and port in the following format - 192.168.1.100:4000");
-            WriteToLog(@"<GAMEPADKILL>  <---Tells server to shut down the gamepad connection/thread");
-            WriteToLog(@"Server returns: <GAMEPADKILL-OK>");
-            WriteToLog(@"<VIDEOINFO>  <---Tells server to open up the video stream");
-            WriteToLog(@"Server returns: ip addrss and port of the video stream in the following format - 192.168.1.100:4000");
-            WriteToLog(@"<VIDEOKILL>  <---Tells server to close the video stream");
-            WriteToLog(@"Server returns: <VIDEOKILL-OK>");
-            WriteToLog(@"<SERVERKILLCONNECTION>  <---Tells server to shut down main TCP connection to the client");
-            WriteToLog(@"Server returns: Goodbye!");
-            WriteToLog(@"<SETIPLOCAL>  <---Sets the IP to whatever the controllers's current IP is. This is the default and you would only use this command to switch back changes you made using other IP commands.");
-            WriteToLog(@"Server returns: IP address");
-            WriteToLog(@"<SETIPDOMAIN> <---Sets the IP/domain name to your defualt domain loaded in your device.");
-            WriteToLog(@"Server returns: IP address or domain address");
-            WriteToLog(@"<SETIP=76.43.746.237> or <SETIP=www.robocop.com> <--Overrides the return IP to anything you send it.");
-            WriteToLog(@"Server returns: IP address or domain address");
-            txStatus.Text = "You're welcome...";
+            PrintHelp();
         }
     }
 
