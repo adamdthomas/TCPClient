@@ -1,8 +1,8 @@
 ﻿<Window x:Name="wnMain" x:Class="TCPUIClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TCP Socket Client v2.0.0" Height="325.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
-    <Grid Height="298" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
+        Title="TCP Socket Client v2.0.0" Height="329.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
+    <Grid Height="301" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
         <Grid.Background>
             <ImageBrush ImageSource="black-texture-background-wallpaper-sfv11hls.jpg"/>
         </Grid.Background>
@@ -28,7 +28,7 @@
                 </LinearGradientBrush>
             </Image.OpacityMask>
         </Image>
-        <TabControl HorizontalAlignment="Left" Height="184" Margin="389,35,0,0" VerticalAlignment="Top" Width="282" Background="{x:Null}" SelectionChanged="TabControl_SelectionChanged">
+        <TabControl HorizontalAlignment="Left" Height="184" Margin="389,33,0,0" VerticalAlignment="Top" Width="282" Background="{x:Null}" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="System" Margin="0" HorizontalAlignment="Left" Width="56">
                 <Grid Margin="4,-2,-4,1">
                     <Grid.ColumnDefinitions>
