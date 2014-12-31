@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("black-texture-background-wallpaper-sfv11hls.jpg")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("silk-satin-cloth-black-folds-texture.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("iedriverserver-license.txt")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("iedriverserver.exe")]
 
 

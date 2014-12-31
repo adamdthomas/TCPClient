@@ -71,14 +71,12 @@
                         <ColumnDefinition Width="4*"/>
                         <ColumnDefinition Width="255*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid.Background>
-                        <ImageBrush ImageSource="black-texture-background-wallpaper-sfv11hls.jpg" Stretch="None"/>
-                    </Grid.Background>
                     <CheckBox x:Name="cbVideo" Content="Enable Video" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Click="cbVideo_Click" Grid.ColumnSpan="3" Margin="7,10,0,0"/>
-                    <ComboBox x:Name="cbVideoType" HorizontalAlignment="Left" Margin="7,31,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="3" SelectedIndex="0" SelectionChanged="cbVideoType_SelectionChanged">
+                    <ComboBox x:Name="cbVideoType" HorizontalAlignment="Left" Margin="7,52,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="3" SelectedIndex="0" SelectionChanged="cbVideoType_SelectionChanged">
                         <ComboBoxItem Content="Foscam"/>
                         <ComboBoxItem Content="GStreamer"/>
                     </ComboBox>
+                    <CheckBox x:Name="cbVideoControl" Content="Enable Video Controls" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" Foreground="White" Click="cbVideoControl_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

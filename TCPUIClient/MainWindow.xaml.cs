@@ -26,7 +26,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Chrome;
 using System.Runtime.InteropServices;
+using OpenQA.Selenium.Remote;
 
 
 
@@ -66,6 +68,7 @@ namespace TCPUIClient
         public static bool cbOutputGPDataB = false;
         public static bool TranslateGPD = false;
         public static bool VideoEnabled = false;
+        public static bool VideoControlOn = false;
         
         public static Stopwatch watch = Stopwatch.StartNew();
 
@@ -75,12 +78,14 @@ namespace TCPUIClient
         public static string LogName = ("TCPClientLog-" + DateTime.Now.ToString("D") + ".txt").Replace(@"/",".").Replace(":",".");
         public static string LogFullPath = LogPath + LogName;
         public static string cmd;
+        public static string VideoMode;
 
         public static Int32 DeadZone = 0;
         public static Int32 txRate = 0;
         public static Int32 Center = 0;
         public static string ConfigPath = @"C:\Logs\config.txt";
         public static Dictionary<string, string> dicConfig = new Dictionary<string, string>();
+        
 
         public enum Direction { UP, DOWN, LEFT, RIGHT };
 
@@ -121,6 +126,7 @@ namespace TCPUIClient
                 dicConfig["gamepadmode"] = "0";
                 dicConfig["videomode"] = "0";
                 dicConfig["foscampassword"] = "0";
+                dicConfig["videocontrol"] = "true";
                 SetConfigData();
 
             }
@@ -168,6 +174,19 @@ namespace TCPUIClient
                 TranslateGPD = false;
                 cbTranslate.IsChecked = false;
             }
+
+            if (dicConfig["videocontrol"].ToUpper() == "TRUE")
+            {
+                VideoControlOn = true;
+                cbVideoControl.IsChecked = true;
+            }
+            else
+            {
+                VideoControlOn = false;
+                cbVideoControl.IsChecked = false;
+            }
+
+
            
             //Set UI
             txServername.Text = dicConfig["servername"];
@@ -177,6 +196,7 @@ namespace TCPUIClient
             slCenter.Value = double.Parse(dicConfig["center"]);
             cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
             cbVideoType.SelectedIndex = int.Parse(dicConfig["videomode"]);
+            VideoMode = cbVideoType.Text;
             ShowGamePadAdvancedControls(false);
 
 
@@ -184,11 +204,6 @@ namespace TCPUIClient
             DeadZone = Int32.Parse(dicConfig["deadzone"]);
             txRate = Int32.Parse(dicConfig["txrate"]);
             Center = Int32.Parse(dicConfig["center"]);
-
-            ShowGamePadAdvancedControls(false);
-            
-            
-
         }
 
         public void SetConfigData()
@@ -220,11 +235,11 @@ namespace TCPUIClient
 
         public void RunVideo()
         {
-            if(cbVideoType.SelectedValue == "Foscam")
+            if(cbVideoType.Text == "Foscam")
             {
-                
+                FoscamLogin();
             }
-            else if(cbVideoType.SelectedValue == "GStreamer")
+            else if (cbVideoType.Text == "GStreamer")
             {
                 RunVideoGS();
             }
@@ -232,13 +247,22 @@ namespace TCPUIClient
 
         public void DisconnectVideo()
         {
+            cmd = "<VIDEOKILL>";
+            byte[] msg = Encoding.UTF8.GetBytes(cmd);
+            data = "";
+            int bytesSent = MainSocket.Send(msg);
+            WriteToLog("Client says: " + cmd);
+            int bytesRec = MainSocket.Receive(bytes);
+            data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+            WriteToLog("Server says: " + data);
+
             if (cbVideoType.SelectedValue == "Foscam")
             {
-
+                DisconnectVideoFC();
             }
             else if (cbVideoType.SelectedValue == "GStreamer")
             {
-                DisconnectVideoFS();
+                DisconnectVideoGS();
             }
         }
 
@@ -282,19 +306,10 @@ namespace TCPUIClient
             }
         }
 
-        public void DisconnectVideoFS()
+        public void DisconnectVideoGS()
         {
             try
             {
-                //Test Github
-                cmd = "<VIDEOKILL>";
-                byte[] msg = Encoding.UTF8.GetBytes(cmd);
-                data = "";
-                int bytesSent = MainSocket.Send(msg);
-                WriteToLog("Client says: " + cmd);
-                int bytesRec = MainSocket.Receive(bytes);
-                data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                WriteToLog("Server says: " + data);
                 KillProcessByName("cmd.exe");
                 txStatus.Text = "Video discconected successfully!";
             }
@@ -312,13 +327,18 @@ namespace TCPUIClient
 
         #region Foscam
 
-        public void FoscamLogin(string Address, string UserName, string Password)
+        public void FoscamLogin()
         {
             WriteToLog("Attempting to log into Foscam viewer...");
             string[] AddressParts = GetVideoInfo();
 
-            WebAutomationToolkit.Web.WebDriver = new InternetExplorerDriver();
-            WebAutomationToolkit.Web.NavigateToURL(AddressParts[0] + ":" + AddressParts[1]);
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--always-authorize-plugins=true");
+            options.AddArgument("--test-type");
+            WebAutomationToolkit.Web.WebDriver = new ChromeDriver(options);
+
+
+            WebAutomationToolkit.Web.NavigateToURL(@"http://" +AddressParts[0] + ":" + AddressParts[1]);
             WebAutomationToolkit.Utilities.Wait(2, 500);
             WebAutomationToolkit.Web.Sync.SyncByID("username", 10);
             WebAutomationToolkit.Web.Edit.SetTextByCSSPath("#passwd", dicConfig["foscampassword"]);
@@ -329,30 +349,57 @@ namespace TCPUIClient
             WriteToLog("Webcam viewer has been launched successfully...");
         }
         
-        public void MoveCamera(Direction direction)
+        public static void MoveCamera(Direction direction)
         {
             switch (direction)
             {
                 case Direction.UP:
                     WebAutomationToolkit.Web.Button.ClickByID(@"live_yt1_ptzMoveUp");
-                    WriteToLog("Camera move: UP");
+                    //WriteToLog("Camera move: UP");
                     break;
                 case Direction.DOWN:
                     WebAutomationToolkit.Web.Button.ClickByID(@"live_yt1_ptzMoveDown");
-                    WriteToLog("Camera move: DOWN");
+                    //WriteToLog("Camera move: DOWN");
                     break;
                 case Direction.LEFT:
                     WebAutomationToolkit.Web.Button.ClickByID(@"live_yt5_ptzMoveLeft");
-                    WriteToLog("Camera move: LEFT");
+                    //WriteToLog("Camera move: LEFT");
                     break;
                 case Direction.RIGHT:
                     WebAutomationToolkit.Web.Button.ClickByID(@"live_yt5_ptzMoveRight");
-                    WriteToLog("Camera move: RIGHT");
+                    //WriteToLog("Camera move: RIGHT");
                     break;
                 default:
                     break;
             }
             WebAutomationToolkit.Utilities.Wait(0, 500);
+        }
+
+        public static void ControlFCam(string cmd)
+        {
+            if (cmd.IndexOf("Buttons12:ON") >= 0)
+            {
+                MoveCamera(Direction.UP);
+            }
+            if (cmd.IndexOf("Buttons13:ON") >= 0)
+            {
+                MoveCamera(Direction.DOWN);
+            }
+            if (cmd.IndexOf("Buttons14:ON") >= 0)
+            {
+                MoveCamera(Direction.LEFT);
+            }
+            if (cmd.IndexOf("Buttons15:ON") >= 0)
+            {
+                MoveCamera(Direction.RIGHT);
+            }
+
+        }
+
+        public void DisconnectVideoFC()
+        {
+            WebAutomationToolkit.Web.CloseBrowser();
+            KillProcessByName("chromedriver.exe");
         }
 
         #endregion
@@ -718,8 +765,16 @@ namespace TCPUIClient
                         
                                     // This call blocks. 
                                     Thread.Sleep(int.Parse(txRate.ToString()));
-                                 
+                                    if (VideoControlOn && VideoEnabled && GamePadEnabled && CurrentlyConnected && VideoMode == "Foscam")
+                                    { 
+                                        if (GPD.IndexOf("Buttons12:ON") >= 0 || GPD.IndexOf("Buttons13:ON") >= 0 || GPD.IndexOf("Buttons14:ON") >= 0 || GPD.IndexOf("Buttons15:ON") >= 0)
+                                        {
+                                            ControlFCam(GPD);
+                                        }
+                                    }
+
                                     GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
+
                                 }
                             }
                         }
@@ -1140,6 +1195,53 @@ namespace TCPUIClient
 
         #region UI
 
+        #region Not Used
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+        private void txDeadZone_LostFocus(object sender, RoutedEventArgs e)
+        {
+        }
+        private void txDeadZone_TextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
+
+        private void cbOutputGPData_Checked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void txMessage_TextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
+
+        private void Grid_GotFocus(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Window_GotFocus(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void lstMaine_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+        }
+
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+        }
+
+        #endregion
+
         public void btnConnect_Click(object sender, RoutedEventArgs e)
         {
   
@@ -1284,49 +1386,7 @@ namespace TCPUIClient
             SetConfigData();
         }
 
-            #region Not Used
 
-
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-            private void txDeadZone_LostFocus(object sender, RoutedEventArgs e)
-            {
-            }
-            private void txDeadZone_TextChanged(object sender, TextChangedEventArgs e)
-            {
-            }
-
-            private void cbOutputGPData_Checked(object sender, RoutedEventArgs e)
-            {
-            }
-
-            private void txMessage_TextChanged(object sender, TextChangedEventArgs e)
-            {
-            }
-
-            private void Grid_GotFocus(object sender, RoutedEventArgs e)
-            {
-            }
-
-            private void Window_GotFocus(object sender, RoutedEventArgs e)
-            {
-            }
-
-            private void lstMaine_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            {
-            }
-
-            private void Window_MouseMove(object sender, MouseEventArgs e)
-            {
-            }
-
-            private void Window_Activated(object sender, EventArgs e)
-            {
-            }
-
-        #endregion
 
         private void txPort_KeyDown(object sender, KeyEventArgs e)
         {
@@ -1372,17 +1432,19 @@ namespace TCPUIClient
             PrintHelp();
         }
 
-        #endregion
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
         private void cbVideoType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             dicConfig["videomode"] = cbVideoType.SelectedIndex.ToString();
+            VideoMode = cbVideoType.Text;
         }
+
+        private void cbVideoControl_Click(object sender, RoutedEventArgs e)
+        {
+            VideoControlOn = cbVideoControl.IsChecked.Value;
+            dicConfig["videocontrol"] = cbVideoControl.IsChecked.Value.ToString();
+        }
+
+        #endregion
 
     }
 
