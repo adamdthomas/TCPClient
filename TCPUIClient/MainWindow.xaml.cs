@@ -256,11 +256,11 @@ namespace TCPUIClient
             data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
             WriteToLog("Server says: " + data);
 
-            if (cbVideoType.SelectedValue == "Foscam")
+            if (cbVideoType.Text == "Foscam")
             {
                 DisconnectVideoFC();
             }
-            else if (cbVideoType.SelectedValue == "GStreamer")
+            else if (cbVideoType.Text == "GStreamer")
             {
                 DisconnectVideoGS();
             }
@@ -399,7 +399,8 @@ namespace TCPUIClient
         public void DisconnectVideoFC()
         {
             WebAutomationToolkit.Web.CloseBrowser();
-            KillProcessByName("chromedriver.exe");
+            WebAutomationToolkit.Web.WebDriver.Quit();
+            //KillProcessByName("chromedriver.exe *32");
         }
 
         #endregion
