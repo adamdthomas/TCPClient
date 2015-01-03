@@ -1581,15 +1581,11 @@ namespace TCPUIClient
             PrintHelp();
         }
 
-
-
         private void cbVideoControl_Click(object sender, RoutedEventArgs e)
         {
             VideoControlOn = cbVideoControl.IsChecked.Value;
             dicConfig["videocontrol"] = cbVideoControl.IsChecked.Value.ToString();
         }
-
-        #endregion
 
         private void cbGamepadType_DropDownClosed(object sender, EventArgs e)
         {
@@ -1610,6 +1606,8 @@ namespace TCPUIClient
             dicConfig["videomode"] = cbVideoType.SelectedIndex.ToString();
             VideoMode = cbVideoType.Text;
         }
+
+        #endregion
 
     }
 
