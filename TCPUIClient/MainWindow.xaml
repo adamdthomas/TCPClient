@@ -1,7 +1,7 @@
 ﻿<Window x:Name="wnMain" x:Class="TCPUIClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TCP Socket Client v2.0.0" Height="329.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
+        Title="TCP Socket Client v2.1.0" Height="329.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
     <Grid Height="301" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
         <Grid.Background>
             <ImageBrush ImageSource="black-texture-background-wallpaper-sfv11hls.jpg"/>
@@ -57,10 +57,11 @@
                     <Slider x:Name="slCenter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="186" Margin="85,120,0,0" Maximum="38250" Minimum="23250" Value="30750" Cursor="Hand" SmallChange="1" ValueChanged="slCenter_ValueChanged" Grid.ColumnSpan="2"/>
                     <Label x:Name="lbCenter" Content="Center" HorizontalAlignment="Left" Margin="5,116,0,0" VerticalAlignment="Top" Foreground="White" Width="68" Cursor="Hand" MouseLeftButtonUp="lbCenter_MouseLeftButtonUp"/>
                     <CheckBox x:Name="cbTranslate" Content="Translate Gamepad Data" Grid.Column="1" HorizontalAlignment="Left" Margin="8,6,-3,0" VerticalAlignment="Top" Foreground="White" Width="162" Click="cbTranslate_Click"/>
-                    <ComboBox x:Name="cbGamepadType" HorizontalAlignment="Left" Margin="5,27,0,0" VerticalAlignment="Top" Width="266" Height="25" SelectedIndex="0" SelectionChanged="cbGamepadType_SelectionChanged" Grid.ColumnSpan="2">
+                    <ComboBox x:Name="cbGamepadType" HorizontalAlignment="Left" Margin="5,27,0,0" VerticalAlignment="Top" Width="266" Height="25" SelectedIndex="0" SelectionChanged="cbGamepadType_SelectionChanged" Grid.ColumnSpan="2" DropDownClosed="cbGamepadType_DropDownClosed">
                         <ComboBoxItem Content="Server Controlled Gamepad UDP"/>
                         <ComboBoxItem Content="Server Controlled Gamepad TCP"/>
                         <ComboBoxItem Content="Static Gamepad"/>
+                        <ComboBoxItem Content="Client Controlled Gamepad UDP"/>
                     </ComboBox>
                 </Grid>
             </TabItem>
@@ -73,8 +74,9 @@
                         <ColumnDefinition Width="177*"/>
                     </Grid.ColumnDefinitions>
                     <CheckBox x:Name="cbVideo" Content="Enable Video" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Click="cbVideo_Click" Grid.ColumnSpan="3" Margin="5,11,0,0"/>
-                    <ComboBox x:Name="cbVideoType" HorizontalAlignment="Left" Margin="5,53,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="4" SelectedIndex="0" SelectionChanged="cbVideoType_SelectionChanged">
+                    <ComboBox x:Name="cbVideoType" HorizontalAlignment="Left" Margin="5,53,0,0" VerticalAlignment="Top" Width="192" Grid.ColumnSpan="4" SelectedIndex="0" SelectionChanged="cbVideoType_SelectionChanged" DropDownClosed="cbVideoType_DropDownClosed">
                         <ComboBoxItem Content="Foscam"/>
+                        <ComboBoxItem Content="Client Controlled Foscam"/>
                         <ComboBoxItem Content="GStreamer"/>
                     </ComboBox>
                     <CheckBox x:Name="cbVideoControl" Content="Enable Video Controls" HorizontalAlignment="Left" Margin="5,31,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Foreground="White" Click="cbVideoControl_Click"/>

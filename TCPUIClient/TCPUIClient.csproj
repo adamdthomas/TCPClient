@@ -172,6 +172,10 @@
     <Resource Include="black-texture-background-wallpaper-sfv11hls.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\packages\Selenium.WebDriver.ChromeDriver.2.12.0.0\content\chromedriver.exe">
+      <Link>chromedriver.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\packages\WebDriverIEDriver.2.43.0.0\tools\IEDriverServer-license.txt">
       <Link>IEDriverServer-license.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -188,6 +192,17 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\SharpDX.2.6.3\build\SharpDX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SharpDX.2.6.3\build\SharpDX.targets'))" />
+  </Target>
+  <PropertyGroup Label="DownloadChromeDriverBuildTask">
+    <CoreBuildDependsOn>DownloadChromeDriver;$(CoreBuildDependsOn)</CoreBuildDependsOn>
+    <ChromeDriverInstallPath>$(SolutionDir)packages\Selenium.WebDriver.ChromeDriver.2.12.0.0\</ChromeDriverInstallPath>
+    <ChromeDriverToolsPath>$(ChromeDriverInstallPath)tools\</ChromeDriverToolsPath>
+    <ChromeDriverInitScriptPath>$(ChromeDriverToolsPath)Init.ps1</ChromeDriverInitScriptPath>
+    <ChromeDriverPath>$(ChromeDriverInstallPath)content\chromedriver.exe</ChromeDriverPath>
+    <PowerShellExe Condition="'$(PowerShellExe)'==''">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</PowerShellExe>
+  </PropertyGroup>
+  <Target Name="DownloadChromeDriver" Label="DownloadChromeDriverBuildTask">
+    <Exec Condition="!Exists('$(ChromeDriverPath)')" Command="$(PowerShellExe) -NonInteractive -executionpolicy Unrestricted -command &quot;&amp; { &amp;'$(ChromeDriverInitScriptPath)' '$(ChromeDriverInstallPath)' '$(ChromeDriverToolsPath)'} &quot;" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

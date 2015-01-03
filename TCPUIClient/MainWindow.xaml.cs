@@ -69,6 +69,7 @@ namespace TCPUIClient
         public static bool TranslateGPD = false;
         public static bool VideoEnabled = false;
         public static bool VideoControlOn = false;
+        public static bool  GamePadConnected = false;
         
         public static Stopwatch watch = Stopwatch.StartNew();
 
@@ -124,12 +125,16 @@ namespace TCPUIClient
                 dicConfig["txrate"] = "0";
                 dicConfig["center"] = "30750";
                 dicConfig["gamepadmode"] = "0";
+                dicConfig["gamepadaddress"] = "www.thomasworkshop.com:8888";
                 dicConfig["videomode"] = "0";
                 dicConfig["foscampassword"] = "0";
                 dicConfig["videocontrol"] = "true";
+                dicConfig["videoaddress"] = "www.thomasworkshop.com:88";
+
                 SetConfigData();
 
             }
+
 
             //Pull all values from the config file. 
             System.Collections.Generic.IEnumerable<String> lines = File.ReadLines(ConfigPath);
@@ -221,8 +226,14 @@ namespace TCPUIClient
             }
         }
 
-       
-
+        public void PrintConfig()
+        {
+            foreach (var pair in dicConfig)
+            {
+                WriteToLog(pair.Key + "=" + pair.Value);
+            }
+        }
+      
         private void Grid_Initialized(object sender, EventArgs e)
         {
             GetConfigData();
@@ -235,7 +246,7 @@ namespace TCPUIClient
 
         public void RunVideo()
         {
-            if(cbVideoType.Text == "Foscam")
+            if (cbVideoType.Text == "Foscam" || cbVideoType.Text == "Client Controlled Foscam")
             {
                 FoscamLogin();
             }
@@ -247,14 +258,17 @@ namespace TCPUIClient
 
         public void DisconnectVideo()
         {
-            cmd = "<VIDEOKILL>";
-            byte[] msg = Encoding.UTF8.GetBytes(cmd);
-            data = "";
-            int bytesSent = MainSocket.Send(msg);
-            WriteToLog("Client says: " + cmd);
-            int bytesRec = MainSocket.Receive(bytes);
-            data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-            WriteToLog("Server says: " + data);
+            if (cbVideoType.Text != "Client Controlled Foscam")
+            {
+                cmd = "<VIDEOKILL>";
+                byte[] msg = Encoding.UTF8.GetBytes(cmd);
+                data = "";
+                int bytesSent = MainSocket.Send(msg);
+                WriteToLog("Client says: " + cmd);
+                int bytesRec = MainSocket.Receive(bytes);
+                data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                WriteToLog("Server says: " + data);
+            }
 
             if (cbVideoType.Text == "Foscam")
             {
@@ -268,14 +282,21 @@ namespace TCPUIClient
 
         public string[] GetVideoInfo()
         {
-            cmd = "<VIDEOINFO>"; //vid cmd
-            byte[] msg = Encoding.UTF8.GetBytes(cmd);
-            data = "";
-            int bytesSent = MainSocket.Send(msg);
-            WriteToLog("Client says: " + cmd);
-            int bytesRec = MainSocket.Receive(bytes);
-            data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-            WriteToLog("Server says: " + data);
+            if (cbVideoType.Text == "Client Controlled Foscam")
+            {
+                data = dicConfig["videoaddress"];
+            }
+            else
+            { 
+                cmd = "<VIDEOINFO>"; //vid cmd
+                byte[] msg = Encoding.UTF8.GetBytes(cmd);
+                data = "";
+                int bytesSent = MainSocket.Send(msg);
+                WriteToLog("Client says: " + cmd);
+                int bytesRec = MainSocket.Receive(bytes);
+                data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                WriteToLog("Server says: " + data);
+            }
             return data.Split(':');
         }
 
@@ -329,9 +350,9 @@ namespace TCPUIClient
 
         public void FoscamLogin()
         {
-            WriteToLog("Attempting to log into Foscam viewer...");
-            string[] AddressParts = GetVideoInfo();
 
+            string[] AddressParts = GetVideoInfo();
+            WriteToLog("Attempting to log into Foscam viewer at address: " + AddressParts[0] + ":" + AddressParts[1]);
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--always-authorize-plugins=true");
             options.AddArgument("--test-type");
@@ -417,9 +438,6 @@ namespace TCPUIClient
 
             //<GAMEPADINFO>
 
-
-
-
             if (CurrentlyConnected)
             {
                 if (GamePadEnabled)
@@ -477,10 +495,20 @@ namespace TCPUIClient
                         Thread GPThread = new Thread(MainWindow.SendGPDataIndependent);
                         GPThread.Start();
                         Thread.Sleep(1000);
+                        if (GamePadConnected)
+                        {
                         WriteToLog(GPID);
-
                         WriteToLog("Gamepad connected to: " + data);
-                        txStatus.Text = "Gamepad Connected!";
+                        txStatus.Text = "Gamepad Connected!";    
+                        }
+                        else
+                        {
+                            cbGameEnabled.IsChecked = false;
+                            WriteToLog("Please connect a gamepad!");
+                            txStatus.Text = "Warning!";
+                            GamePadEnabled = false;
+                        }
+      
                     }
                     else
                     {
@@ -508,6 +536,9 @@ namespace TCPUIClient
             GamePadEnabled = cbGameEnabled.IsChecked.Value;
 
             //Ask Server for IP and port
+            if (cbGamepadType.Text == "Server Controlled Gamepad UDP")
+            {
+                          #region If server controlled
             try
             {
                 if (CurrentlyConnected)
@@ -529,10 +560,22 @@ namespace TCPUIClient
                         Thread GPThread = new Thread(MainWindow.SendGPDataIndependentUDP);
                         GPThread.Start();
                         Thread.Sleep(1000);
-                        WriteToLog(GPID);
 
-                        WriteToLog("Gamepad connected to: " + data);
-                        txStatus.Text = "Gamepad Connected!";
+                        if (GamePadConnected)
+                        {
+                            WriteToLog(GPID);
+                            WriteToLog("Gamepad connected to: " + data);
+                            txStatus.Text = "Gamepad Connected!";
+                        }
+                        else
+                        {
+                            cbGameEnabled.IsChecked = false;
+                            WriteToLog("Please connect a gamepad!");
+                            txStatus.Text = "Warning!";
+                            GamePadEnabled = false;
+                            
+                        }
+
                     }
                     else
                     {
@@ -543,7 +586,7 @@ namespace TCPUIClient
                 else
                 {
                     cbGameEnabled.IsChecked = false;
-                    WriteToLog("Please connect to the server before connecting a gamepad.");
+                    WriteToLog("Please connect to the server before connecting a gamepad or slect client controlled gamepad.");
                     txStatus.Text = "Warning!";
                 }
             }
@@ -553,6 +596,35 @@ namespace TCPUIClient
                 WriteToLog("Gamepad thread failed to connect.");
                 txStatus.Text = ec.ToString();
             }
+            #endregion
+            }
+            else if (cbGamepadType.Text == "Client Controlled Gamepad UDP")
+            {
+                WriteToLog("Attempting to stream gamepad data to " + dicConfig["gamepadaddress"] + " via UDP.");
+                string[] AddressParts = dicConfig["gamepadaddress"] .Split(':');
+                GamePadSocketUDP = ConnectIndependentUDP(AddressParts[0], int.Parse(AddressParts[1]));
+
+                //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
+                Thread GPThread = new Thread(MainWindow.SendGPDataIndependentUDP);
+                GPThread.Start();
+                Thread.Sleep(1000);
+                if (GamePadConnected)
+                {
+                    WriteToLog(GPID);
+                    WriteToLog("Gamepad connected to: " + data);
+                    txStatus.Text = "Gamepad Connected!";
+                }
+                else
+                {
+                    cbGameEnabled.IsChecked = false;
+                    WriteToLog("Please connect a gamepad!");
+                    txStatus.Text = "Warning!";
+                    GamePadEnabled = false;
+                }
+
+
+            }
+  
         }
 
         public static string GamePadDataFilter(string DataToFilter)
@@ -814,9 +886,11 @@ namespace TCPUIClient
                     joystickGuid = deviceInstance.InstanceGuid;
 
             // If Joystick not found, throws an error
+            GamePadConnected = true;
             if (joystickGuid == Guid.Empty)
             {
                 MainWindow.GPID = "No Gamepad found.";
+                GamePadConnected = false;
                 //Environment.Exit(1);
             }
 
@@ -1053,6 +1127,7 @@ namespace TCPUIClient
             byte[] msg = Encoding.UTF8.GetBytes(txMessage.Text);
             data = "";
 
+            ClientCommandHandler(txMessage.Text);
 
             if (CurrentlyConnected)
             {
@@ -1172,6 +1247,15 @@ namespace TCPUIClient
 
         public void PrintHelp()
         {
+            WriteToLog(@"###Client COMMANDS###");
+            WriteToLog(@"TXRATE=# <---Sets the TX rate to a precise number. Number must not be a decimal.");
+            WriteToLog(@"GAMEPADADDRESS=???.???.???.???:???? <---The address and port of the UDP server that the gamepad data will be sent to.");
+            WriteToLog(@"VIDEOADDRESS=???.???.???.???:???? <---The address and port of the Foscam video server that will be launched via web automation");
+            WriteToLog(@"CONFIG <---Prints the config data"); 
+            WriteToLog(@"HELP <---Prints the help text"); 
+
+            WriteToLog(L);
+            
             WriteToLog(@"###SERVER COMMANDS###");
             WriteToLog(@"<GAMEPADINFO>  <---Tells server to open up UDP/TCP connection (If selected) to accept controller commands.");
             WriteToLog(@"Server returns: ip address and port in the following format - 192.168.1.100:4000");
@@ -1192,11 +1276,78 @@ namespace TCPUIClient
             txStatus.Text = "You're welcome...";
         }
 
+        public void  ClientCommandHandler(string command)
+        {
+            if (command.ToUpper().IndexOf("GAMEPADADDRESS=") > -1)
+            {
+                string[] gpParts = command.Split('=');
+                dicConfig["gamepadaddress"] = gpParts[1];
+                WriteToLog("Gamepad address is now set to: " + gpParts[1]);
+                txMessage.Text = "";
+            }
+
+            if (command.ToUpper().IndexOf("VIDEOADDRESS=") > -1)
+            {
+                string[] gpParts = command.Split('=');
+                dicConfig["videoaddress"] = gpParts[1];
+                WriteToLog("Video address is now set to: " + gpParts[1]);
+                txMessage.Text = "";
+            }
+
+            if (command.ToUpper().IndexOf("FOSCAMPASSWORD=") > -1)
+            {
+                string[] gpParts = command.Split('=');
+                dicConfig["foscampassword"] = gpParts[1];
+                WriteToLog("Foscam Password is now set");
+                txMessage.Text = "";
+            }
+
+            if (command.ToUpper() == "HELP")
+            {
+                PrintHelp();
+                txMessage.Text = "";
+            }
+
+            if (command.ToUpper() == "CONFIG")
+            {
+                PrintConfig();
+                txMessage.Text = "";
+            }
+
+            if (command.ToUpper().IndexOf("TXRATE=") > -1)
+            {
+                string[] gpParts = command.Split('=');
+                if (int.Parse(gpParts[1]) <= slTXRate.Maximum && int.Parse(gpParts[1]) >= 0)
+                {
+                    dicConfig["txrate"] = gpParts[1];
+                    slTXRate.Value = int.Parse(gpParts[1]);
+                    WriteToLog("TX Rate is now set to: " + gpParts[1] + " miliseconds");
+                    txMessage.Text = "";
+                }
+                else
+                {
+                    WriteToLog("The value you entered is not valid. Please enter a whole number between " + slTXRate.Minimum.ToString() + " and " + slTXRate.Maximum.ToString());
+                }
+
+
+            }
+        }
+
         #endregion
 
         #region UI
 
         #region Not Used
+
+        private void cbGamepadType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void cbVideoType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -1277,7 +1428,7 @@ namespace TCPUIClient
             {
 
                 ShowGamePadAdvancedControls(true);
-                if (GPT == "Server Controlled Gamepad UDP")
+                if (GPT.IndexOf("Gamepad UDP") > -1)
                 {
                     RunGamePadIndependentUDP();
                 }
@@ -1402,7 +1553,7 @@ namespace TCPUIClient
         private void cbVideo_Click(object sender, RoutedEventArgs e)
         {
             VideoEnabled = cbVideo.IsChecked.Value;
-            if (CurrentlyConnected)
+            if (CurrentlyConnected || cbVideoType.Text == "Client Controlled Foscam")
             {
                 if (VideoEnabled)
                 {
@@ -1412,7 +1563,7 @@ namespace TCPUIClient
             else
             {
                 txStatus.Text = "Warning!";
-                WriteToLog("You must be connected to the main server if you would like to stream video!");
+                WriteToLog("You must be connected to the main server if you would like to stream video with the selected mode: " + cbVideoType.Text);
                 cbVideo.IsChecked = false;
 
             }
@@ -1422,10 +1573,7 @@ namespace TCPUIClient
             }
         }
 
-        private void cbGamepadType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            dicConfig["gamepadmode"] = cbGamepadType.SelectedIndex.ToString();
-        }     
+
 
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -1433,11 +1581,7 @@ namespace TCPUIClient
             PrintHelp();
         }
 
-        private void cbVideoType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            dicConfig["videomode"] = cbVideoType.SelectedIndex.ToString();
-            VideoMode = cbVideoType.Text;
-        }
+
 
         private void cbVideoControl_Click(object sender, RoutedEventArgs e)
         {
@@ -1446,6 +1590,26 @@ namespace TCPUIClient
         }
 
         #endregion
+
+        private void cbGamepadType_DropDownClosed(object sender, EventArgs e)
+        {
+            if (cbGamepadType.Text == "Client Controlled Gamepad UDP")
+            {
+                WriteToLog("Current assigned UDP gamepad address is: " + dicConfig["gamepadaddress"] + L + "To change this use command: GAMEPADADDRESS=Whateveraddressyouwant.com:888");
+            }
+
+            dicConfig["gamepadmode"] = cbGamepadType.SelectedIndex.ToString();
+        }
+
+        private void cbVideoType_DropDownClosed(object sender, EventArgs e)
+        {
+            if(cbVideoType.Text == "Client Controlled Foscam")
+            {
+                WriteToLog("Current assigned Foscam address is: " + dicConfig["videoaddress"] + L + "To change this use command: VIDEOADDRESS=Whateveraddressyouwant.com:88");
+            }
+            dicConfig["videomode"] = cbVideoType.SelectedIndex.ToString();
+            VideoMode = cbVideoType.Text;
+        }
 
     }
 
