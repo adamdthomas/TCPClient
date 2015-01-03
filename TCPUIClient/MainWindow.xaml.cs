@@ -270,7 +270,7 @@ namespace TCPUIClient
                 WriteToLog("Server says: " + data);
             }
 
-            if (cbVideoType.Text == "Foscam")
+            if (cbVideoType.Text == "Foscam" || cbVideoType.Text == "Client Controlled Foscam")
             {
                 DisconnectVideoFC();
             }

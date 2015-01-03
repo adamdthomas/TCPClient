@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("chromedriver.exe")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("iedriverserver-license.txt")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("iedriverserver.exe")]
 
