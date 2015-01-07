@@ -369,7 +369,7 @@ namespace TCPUIClient
             WebAutomationToolkit.Utilities.Wait(5);
             WriteToLog("Webcam viewer has been launched successfully...");
         }
-        
+      
         public static void MoveCamera(Direction direction)
         {
             switch (direction)
@@ -415,12 +415,26 @@ namespace TCPUIClient
                 MoveCamera(Direction.RIGHT);
             }
 
+
+
         }
 
         public void DisconnectVideoFC()
         {
-            WebAutomationToolkit.Web.CloseBrowser();
-            WebAutomationToolkit.Web.WebDriver.Quit();
+            try
+            {
+                WebAutomationToolkit.Web.CloseBrowser();
+                WebAutomationToolkit.Web.WebDriver.Quit();
+                txStatus.Text = "Success!";
+                WriteToLog("The Foscam browser has been closed.");
+            }
+            catch (Exception)
+            {
+
+                txStatus.Text = "Warning!";
+                WriteToLog("YOU DID THIS! Didn't you? ...The client attempted to close the broser, but couldn't. Had you closed it already?");
+            }
+
             //KillProcessByName("chromedriver.exe *32");
         }
 
@@ -611,7 +625,7 @@ namespace TCPUIClient
                 if (GamePadConnected)
                 {
                     WriteToLog(GPID);
-                    WriteToLog("Gamepad connected to: " + data);
+                    WriteToLog("Gamepad connected to: " + dicConfig["gamepadaddress"]);
                     txStatus.Text = "Gamepad Connected!";
                 }
                 else
@@ -924,24 +938,29 @@ namespace TCPUIClient
 
         public void DisconnectGamePad()
         {
-            try
+            if (cbGamepadType.Text == "Server Controlled Gamepad UDP")
             {
-                cmd = "<GAMEPADKILL>";
-                byte[] msg = Encoding.UTF8.GetBytes(cmd);
-                data = "";
-                int bytesSent = MainSocket.Send(msg);
-                WriteToLog("Client says: " + cmd);
-                int bytesRec = MainSocket.Receive(bytes);
-                data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                WriteToLog("Server says: " + data);
-                txStatus.Text = "Gamepad discconected successfully!";
+                try
+                {
+                    cmd = "<GAMEPADKILL>";
+                    byte[] msg = Encoding.UTF8.GetBytes(cmd);
+                    data = "";
+                    int bytesSent = MainSocket.Send(msg);
+                    WriteToLog("Client says: " + cmd);
+                    int bytesRec = MainSocket.Receive(bytes);
+                    data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                    WriteToLog("Server says: " + data);
+                    txStatus.Text = "Gamepad discconected successfully!";
  
+                }
+                catch (Exception ec)
+                {
+                    txStatus.Text = ec.ToString();
+                    WriteToLog("Dagnabit! Something went horribly wrong when I tried to disconnect the gamepad...");
+                }
             }
-            catch (Exception ec)
-            {
-                txStatus.Text = ec.ToString();
-                WriteToLog("Dagnabit! Something went horribly wrong when I tried to disconnect the gamepad...");
-            }
+
+            txStatus.Text = "Success!";
             cbGameEnabled.IsChecked = false;
             WriteToLog("Gamepad disconnected.");
             GamePadEnabled = false;
