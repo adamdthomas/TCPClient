@@ -85,3 +85,4 @@ C:\Users\Adam\Source\Repos\TCPClient\TCPUIClient\bin\Debug\WebDriver.Support.xml
 C:\Users\Adam\Source\Repos\TCPClient\TCPUIClient\obj\Debug\TCPUIClient.exe.manifest
 C:\Users\Adam\Source\Repos\TCPClient\TCPUIClient\obj\Debug\TCPUIClient.application
 C:\Users\Adam\Source\Repos\TCPClient\TCPUIClient\bin\Debug\chromedriver.exe
+C:\Users\Adam\Source\Repos\TCPClient\TCPUIClient\obj\Debug\TCPUIClient.csprojResolveAssemblyReference.cache
