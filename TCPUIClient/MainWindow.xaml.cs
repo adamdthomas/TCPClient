@@ -852,7 +852,7 @@ namespace TCPUIClient
                         
                                     // This call blocks. 
                                     Thread.Sleep(int.Parse(txRate.ToString()));
-                                    if (VideoControlOn && VideoEnabled && GamePadEnabled && CurrentlyConnected && VideoMode == "Foscam")
+                                    if (VideoControlOn && VideoEnabled && GamePadEnabled && CurrentlyConnected && VideoMode.IndexOf("Foscam") >=0  )
                                     { 
                                         if (GPD.IndexOf("Buttons12:ON") >= 0 || GPD.IndexOf("Buttons13:ON") >= 0 || GPD.IndexOf("Buttons14:ON") >= 0 || GPD.IndexOf("Buttons15:ON") >= 0)
                                         {
