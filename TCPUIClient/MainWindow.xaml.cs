@@ -895,6 +895,15 @@ namespace TCPUIClient
                             MyJS.Poll();
                             var datas = MyJS.GetBufferedData();
 
+
+                            if (datas.Count() < 1 && UDPMessage != "")
+                            {
+                                byte[] msg = Encoding.ASCII.GetBytes(UDPMessage);
+                                GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
+                                LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
+                                UDPMessage = "";
+                            }
+
                             //Keep alive if no gamepad data is available and keep alive is selected
                             if (KeepAliveEnabled && datas.Count() < 1)
                             {
@@ -924,14 +933,7 @@ namespace TCPUIClient
 
                                 //add a message from the client if requested via the UDPMessage= command
                                 GPD = GamePadDataFilter(state.ToString());
-                                if (GPD == "" && UDPMessage != "" )
-                                {
-                                    GPD = UDPMessage;
-                                    UDPMessage = "";
-                                }
-
-  
-
+                          
                                 if (GPD != "")
                                 {
                                     if (LogGamepadEnabled)
@@ -1299,7 +1301,7 @@ namespace TCPUIClient
                     }
                     catch (Exception ex)
                     {
-                        WriteToLog("Uh oh... Could not communicate with the server.");
+                        WriteToLog("Could not communicate with the TCP server.");
                         txStatus.Text = ex.ToString();
                     }
                 }
