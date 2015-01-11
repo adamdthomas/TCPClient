@@ -687,6 +687,7 @@ namespace TCPUIClient
 
         public  string GamePadDataFilter(string DataToFilter)
         {
+            bool CenterStick = false;
             string s = DataToFilter;
             string[] cmds = s.Split(' ');
             string ButLabel = cmds[1].Replace(",", "");
@@ -705,22 +706,33 @@ namespace TCPUIClient
                 case "Z":
                     if (ButVal < (Center + (DeadZone / 2)) && ButVal > (Center - (DeadZone / 2)))
                     {
-                        DataToFilter = "";
+                        CenterStick = true;
+                    }
+
+                    if (TranslateGPD)
+                    {
+                        ButValDec = ButVal / 361.11;
+                        ButValDec = Math.Round(ButValDec, 0);
+                        if(CenterStick)
+                        {
+                            ButValDec = 90;
+                        }
+                        if(ButValDec > 180)
+                        {
+                            ButValDec = 180;
+                        }
+                        if (ButValDec < 0)
+                        {
+                            ButValDec = 0;
+                        }
+                        DataToFilter = ButLabel + ":" + ButValDec.ToString() + "~"; 
                     }
                     else
                     {
-                        if (TranslateGPD)
-                        {
-                            ButValDec = ButVal / 361.11;
-                            ButValDec = Math.Round(ButValDec, 0);
-                            DataToFilter = ButLabel + ":" + ButValDec.ToString() + "~"; 
-                        }
-                        else
-                        {
-                            DataToFilter = s;
-                        }
-                        
+                        DataToFilter = s;
                     }
+                        
+                    
                     break;
                 case "Buttons0":
                 case "Buttons1":
@@ -882,8 +894,35 @@ namespace TCPUIClient
                         {
                             MyJS.Poll();
                             var datas = MyJS.GetBufferedData();
+
+                            //Keep alive if no gamepad data is available and keep alive is selected
+                            if (KeepAliveEnabled && datas.Count() < 1)
+                            {
+                                Int64 CurrentTime = GetEPOCHTimeInMilliSeconds();
+                                Int64 TimeBetweenTransmissions = CurrentTime - LastTransmissionTime;
+
+                                if (TimeBetweenTransmissions > KARate)
+                                {
+                                    byte[] msg = Encoding.ASCII.GetBytes("KA:" + CurrentTime.ToString());
+                                    GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
+                                    LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
+
+                                    if (LogGamepadEnabled)
+                                    {
+
+                                        txMain.Dispatcher.Invoke(
+                                        new ThreadLoggerCallback(this.ThreadLogger),
+                                        new object[] { "KA:" + CurrentTime.ToString() });
+                                 
+                                    }
+                                }
+                            }
+                                
+
                             foreach (var state in datas)
                             {
+
+                                //add a message from the client if requested via the UDPMessage= command
                                 GPD = GamePadDataFilter(state.ToString());
                                 if (GPD == "" && UDPMessage != "" )
                                 {
@@ -891,17 +930,7 @@ namespace TCPUIClient
                                     UDPMessage = "";
                                 }
 
-                                if (KeepAliveEnabled && GPD == "")
-                                {
-                                    Int64 CurrentTime = GetEPOCHTimeInMilliSeconds();
-                                    Int64 TimeBetweenTransmissions = CurrentTime - LastTransmissionTime;
-
-                                    if (TimeBetweenTransmissions > KARate)
-                                    {
-                                        GPD = CurrentTime.ToString();
-                                    }
-                                }
-                                
+  
 
                                 if (GPD != "")
                                 {
@@ -914,10 +943,6 @@ namespace TCPUIClient
                                         sw4.WriteLine(GPD);
                                     }
 
-                                    byte[] msg = Encoding.ASCII.GetBytes(GPD);
-                        
-                                    // This call blocks. 
-                                    Thread.Sleep(int.Parse(txRate.ToString()));
                                     
                                     //This splits off the d pad for use with the foscam video feed
                                     if (VideoControlOn && VideoEnabled && GamePadEnabled && CurrentlyConnected && VideoMode.IndexOf("Foscam") >=0  )
@@ -928,6 +953,13 @@ namespace TCPUIClient
                                         }
                                     }
 
+
+                                   
+
+                                    // This pauses to accomodate TX rate
+                                    Thread.Sleep(int.Parse(txRate.ToString()));
+
+                                    byte[] msg = Encoding.ASCII.GetBytes(GPD);
                                     GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
                                     LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
 
@@ -1757,7 +1789,7 @@ namespace TCPUIClient
         private void cbKeepAlive_Click(object sender, RoutedEventArgs e)
         {
             KeepAliveEnabled = cbKeepAlive.IsChecked.Value;
-            dicConfig["keepaliveenabled"] = cbVideoControl.IsChecked.Value.ToString();
+            dicConfig["keepaliveenabled"] = cbKeepAlive.IsChecked.Value.ToString();
         }
 
    

@@ -1,7 +1,7 @@
 ﻿<Window x:Name="wnMain" x:Class="TCPUIClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TCP/UDP Socket Client v2.2.0" Height="368.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
+        Title="TCP/UDP Socket Client v2.2.1" Height="368.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
     <Grid Height="341" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
         <Grid.Background>
             <ImageBrush ImageSource="black-texture-background-wallpaper-sfv11hls.jpg"/>
@@ -66,7 +66,7 @@
                         <ComboBoxItem Content="Client Controlled Gamepad UDP"/>
                     </ComboBox>
                     <CheckBox x:Name="cbKeepAlive" Content="Enable Keep Alive" HorizontalAlignment="Left" Margin="7,56,0,0" VerticalAlignment="Top" Foreground="White" Grid.ColumnSpan="2" Width="115" Click="cbKeepAlive_Click"/>
-                    <Slider x:Name="slKeepAliveRate" HorizontalAlignment="Left" Margin="86,133,0,0" VerticalAlignment="Top" Width="186" Height="24" Grid.ColumnSpan="2" ValueChanged="slKeepAliveRate_ValueChanged" Minimum="25" Maximum="1500"/>
+                    <Slider x:Name="slKeepAliveRate" HorizontalAlignment="Left" Margin="86,133,0,0" VerticalAlignment="Top" Width="186" Height="24" Grid.ColumnSpan="2" ValueChanged="slKeepAliveRate_ValueChanged" Minimum="5" Maximum="1500"/>
                     <Label Content="KA Rate" HorizontalAlignment="Left" Margin="8,132,0,0" VerticalAlignment="Top" Foreground="White"/>
                     <CheckBox x:Name="cbLogGamepad" Content="Log Gamepad Data" Grid.Column="1" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" Foreground="White" Click="cbLogGamepad_Click"/>
                 </Grid>
