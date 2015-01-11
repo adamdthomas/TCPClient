@@ -56,26 +56,29 @@ namespace TCPUIClient
         public static Socket AudioFromMCSocket;
         public static Socket AudioToMCSocket;
 
+        public static Stopwatch watch = Stopwatch.StartNew();
         public static IPEndPoint GameUDPEndPoint;
+        public delegate void ThreadLoggerCallback(string message);
 
         public static byte[] bytes = new byte[1024];
-        public static string data = "";
+        
         public static char c1 = (char)10;
-        public static string L = c1.ToString();
         
         public static bool CurrentlyConnected = false;
         public static bool GamePadEnabled = false;
-        public static bool cbOutputGPDataB = false;
+        public static bool OutputGPData = false;
         public static bool TranslateGPD = false;
         public static bool VideoEnabled = false;
         public static bool VideoControlOn = false;
-        public static bool  GamePadConnected = false;
+        public static bool GamePadConnected = false;
+        public static bool KeepAliveEnabled = false;
         
-        public static Stopwatch watch = Stopwatch.StartNew();
-
+        public static string L = c1.ToString();
+        public static string data = "";
         public static string GPID = "";
         public static string LogPath = @"C:\Logs\";
         public static string VideoBat = @"C:\Logs\vid.bat";
+        public static string ConfigPath = @"C:\Logs\config.txt";
         public static string LogName = ("TCPClientLog-" + DateTime.Now.ToString("D") + ".txt").Replace(@"/",".").Replace(":",".");
         public static string LogFullPath = LogPath + LogName;
         public static string cmd;
@@ -84,9 +87,11 @@ namespace TCPUIClient
         public static Int32 DeadZone = 0;
         public static Int32 txRate = 0;
         public static Int32 Center = 0;
-        public static string ConfigPath = @"C:\Logs\config.txt";
+        public static Int32 KARate = 0;
+
+        public static Int64 LastTransmissionTime = 0;
+
         public static Dictionary<string, string> dicConfig = new Dictionary<string, string>();
-        
 
         public enum Direction { UP, DOWN, LEFT, RIGHT };
 
@@ -130,6 +135,8 @@ namespace TCPUIClient
                 dicConfig["foscampassword"] = "0";
                 dicConfig["videocontrol"] = "true";
                 dicConfig["videoaddress"] = "www.thomasworkshop.com:88";
+                dicConfig["keepaliveenabled"] = "false";
+                dicConfig["karate"] = "250";
 
                 SetConfigData();
 
@@ -160,13 +167,25 @@ namespace TCPUIClient
         {
             if (dicConfig["writetolog"].ToUpper() == "TRUE")
             {
-                cbOutputGPDataB = true;
+                OutputGPData = true;
                 cbOutputGPData.IsChecked = true;
             }
             else
             {
-                cbOutputGPDataB = false;
+                OutputGPData = false;
                 cbOutputGPData.IsChecked = false;
+            }
+
+            if (dicConfig["keepaliveenabled"].ToUpper() == "TRUE")
+            {
+                
+                KeepAliveEnabled = true;
+                cbKeepAlive.IsChecked = true;
+            }
+            else
+            {
+                KeepAliveEnabled = false;
+                cbKeepAlive.IsChecked = false;
             }
 
             if (dicConfig["translategpd"].ToUpper() == "TRUE")
@@ -196,9 +215,12 @@ namespace TCPUIClient
             //Set UI
             txServername.Text = dicConfig["servername"];
             txPort.Text = dicConfig["port"];
+
             slDeadZone.Value = double.Parse(dicConfig["deadzone"]);
             slTXRate.Value = double.Parse(dicConfig["txrate"]);
             slCenter.Value = double.Parse(dicConfig["center"]);
+            slKeepAliveRate.Value = double.Parse(dicConfig["karate"]);
+
             cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
             cbVideoType.SelectedIndex = int.Parse(dicConfig["videomode"]);
             VideoMode = cbVideoType.Text;
@@ -209,6 +231,8 @@ namespace TCPUIClient
             DeadZone = Int32.Parse(dicConfig["deadzone"]);
             txRate = Int32.Parse(dicConfig["txrate"]);
             Center = Int32.Parse(dicConfig["center"]);
+            KARate = Int32.Parse(dicConfig["karate"]);
+
         }
 
         public void SetConfigData()
@@ -619,7 +643,8 @@ namespace TCPUIClient
                 GamePadSocketUDP = ConnectIndependentUDP(AddressParts[0], int.Parse(AddressParts[1]));
 
                 //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
-                Thread GPThread = new Thread(MainWindow.SendGPDataIndependentUDP);
+                Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPDataIndependentUDP));
+                //Thread GPThread = new Thread(MainWindow.SendGPDataIndependentUDP);
                 GPThread.Start();
                 Thread.Sleep(1000);
                 if (GamePadConnected)
@@ -738,7 +763,7 @@ namespace TCPUIClient
                 using (StreamWriter sw = File.AppendText(LogFullPath))
                 {
                     string GPD = "";
-                    var MyJS = StartGamePad();
+                    var MyJS = FindGamepad();
                     while (GamePadEnabled)
                     {
                         MyJS.Poll();
@@ -748,7 +773,7 @@ namespace TCPUIClient
                             GPD = GamePadDataFilter(state.ToString());
                             if (GPD != "")
                             {
-                                if (cbOutputGPDataB)
+                                if (OutputGPData)
                                 {
                                     sw.WriteLine(GPD);
                                 }
@@ -779,7 +804,7 @@ namespace TCPUIClient
                     using (StreamWriter sw3 = File.AppendText(LogFullPath))
                     {
                         string GPD = "";
-                        var MyJS = StartGamePad();
+                        var MyJS = FindGamepad();
                         while (GamePadEnabled)
                         {
                             MyJS.Poll();
@@ -789,7 +814,7 @@ namespace TCPUIClient
                                 GPD = GamePadDataFilter(state.ToString());
                                 if (GPD != "")
                                 {
-                                    if (cbOutputGPDataB)
+                                    if (OutputGPData)
                                     {
                                         sw3.WriteLine(GPD);
                                     }
@@ -833,7 +858,7 @@ namespace TCPUIClient
                     using (StreamWriter sw4 = File.AppendText(LogFullPath))
                     {
                         string GPD = "";
-                        var MyJS = StartGamePad();
+                        var MyJS = FindGamepad();
                         while (GamePadEnabled)
                         {
                             MyJS.Poll();
@@ -843,7 +868,7 @@ namespace TCPUIClient
                                 GPD = GamePadDataFilter(state.ToString());
                                 if (GPD != "")
                                 {
-                                    if (cbOutputGPDataB)
+                                    if (OutputGPData)
                                     {
                                         sw4.WriteLine(GPD);
                                     }
@@ -881,7 +906,7 @@ namespace TCPUIClient
             }
         }
         
-        public static Joystick StartGamePad()
+        public static Joystick FindGamepad()
       {
             // Initialize DirectInput
             var directInput = new DirectInput();
@@ -1209,12 +1234,41 @@ namespace TCPUIClient
 
         #region GeneralFunctions
 
+        public Int64 GetEPOCHTimeInMilliSeconds()
+        {
+            TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            return Convert.ToInt64(t.TotalMilliseconds);
+        }
+
         public void WriteToLog(string Message)
         {
             Message = DateTime.Now.ToString("HH:mm:ss") + " " + Message;
             txMain.AppendText(Message + L);
             txMain.ScrollToEnd();
-            if (cbOutputGPDataB && !GamePadEnabled)
+            if (OutputGPData && !GamePadEnabled)
+            {
+                try
+                {
+                    using (StreamWriter sw = File.AppendText(LogFullPath))
+                    {
+                        sw.WriteLine(Message);
+                        sw.Close();
+                    }
+                }
+                catch (Exception l)
+                {
+                    l.ToString();
+                }
+
+            }
+        }
+
+        private void ThreadLogger(string Message)
+        {
+            Message = DateTime.Now.ToString("HH:mm:ss") + " " + Message;
+            txMain.AppendText(Message + L);
+            txMain.ScrollToEnd();
+            if (OutputGPData && !GamePadEnabled)
             {
                 try
                 {
@@ -1336,7 +1390,7 @@ namespace TCPUIClient
             if (command.ToUpper().IndexOf("TXRATE=") > -1)
             {
                 string[] gpParts = command.Split('=');
-                if (int.Parse(gpParts[1]) <= slTXRate.Maximum && int.Parse(gpParts[1]) >= 0)
+                if (int.Parse(gpParts[1]) <= slTXRate.Maximum && int.Parse(gpParts[1]) >= slTXRate.Minimum)
                 {
                     dicConfig["txrate"] = gpParts[1];
                     slTXRate.Value = int.Parse(gpParts[1]);
@@ -1346,6 +1400,26 @@ namespace TCPUIClient
                 else
                 {
                     WriteToLog("The value you entered is not valid. Please enter a whole number between " + slTXRate.Minimum.ToString() + " and " + slTXRate.Maximum.ToString());
+                }
+
+
+            }
+
+
+            if (command.ToUpper().IndexOf("KARATE=") > -1)
+            {
+                string[] gpParts = command.Split('=');
+
+                if (int.Parse(gpParts[1]) <= slKeepAliveRate.Maximum && int.Parse(gpParts[1]) >= slKeepAliveRate.Minimum)
+                {
+                    dicConfig["karate"] = gpParts[1];
+                    slKeepAliveRate.Value = int.Parse(gpParts[1]);
+                    WriteToLog("Keep Alive Rate is now set to: " + gpParts[1] + " miliseconds");
+                    txMessage.Text = "";
+                }
+                else
+                {
+                    WriteToLog("The value you entered is not valid. Please enter a whole number between " + slKeepAliveRate.Minimum.ToString() + " and " + slKeepAliveRate.Maximum.ToString());
                 }
 
 
@@ -1421,6 +1495,7 @@ namespace TCPUIClient
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
+            var MyTime = GetEPOCHTimeInMilliSeconds();
             Disconnect();
         }
 
@@ -1478,9 +1553,9 @@ namespace TCPUIClient
         private void cbOutputGPData_Click(object sender, RoutedEventArgs e)
         {
             
-            cbOutputGPDataB = cbOutputGPData.IsChecked.Value;
-            dicConfig["writetolog"] = cbOutputGPDataB.ToString();
-            if (cbOutputGPDataB)
+            OutputGPData = cbOutputGPData.IsChecked.Value;
+            dicConfig["writetolog"] = OutputGPData.ToString();
+            if (OutputGPData)
             {
                 System.IO.Directory.CreateDirectory(LogPath);
                 if (!File.Exists(LogFullPath))
@@ -1625,9 +1700,21 @@ namespace TCPUIClient
             dicConfig["videomode"] = cbVideoType.SelectedIndex.ToString();
             VideoMode = cbVideoType.Text;
         }
+        
+        private void slKeepAliveRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            KARate = Int32.Parse(Math.Round(slKeepAliveRate.Value, 0).ToString());
+            txStatus.Text = "Keep alive rate set to: " + Math.Round(slKeepAliveRate.Value, 0).ToString() + " milliseconds.";
+            dicConfig["karate"] = Math.Round(slKeepAliveRate.Value, 0).ToString();
+        }
 
-        #endregion
+        private void cbKeepAlive_Click(object sender, RoutedEventArgs e)
+        {
+            KeepAliveEnabled = cbVideoControl.IsChecked.Value;
+            dicConfig["keepaliveenabled"] = cbVideoControl.IsChecked.Value.ToString();
+        }
 
+    #endregion
     }
 
       
