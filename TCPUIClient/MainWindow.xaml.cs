@@ -486,6 +486,13 @@ namespace TCPUIClient
 
         #region GamePadFunctions
 
+        public void LogFromThread(string Message)
+        {
+            txMain.Dispatcher.Invoke(
+            new ThreadLoggerCallback(this.ThreadLogger),
+            new object[] { Message });
+        }
+
         public void RunGamePad()
         {
             GamePadEnabled = cbGameEnabled.IsChecked.Value;
@@ -806,7 +813,13 @@ namespace TCPUIClient
                             {
                                 if (EnableLogFile)
                                 {
-                                    sw.WriteLine(GPD);
+
+                                    if (LogGamepadEnabled)
+                                    {
+                                        LogFromThread(GPD);
+
+                                        sw.WriteLine(GPD);
+                                    }
                                 }
                                 
                                 byte[] GPMsg = Encoding.ASCII.GetBytes(GPD);
@@ -919,9 +932,7 @@ namespace TCPUIClient
                                     if (LogGamepadEnabled)
                                     {
 
-                                        txMain.Dispatcher.Invoke(
-                                        new ThreadLoggerCallback(this.ThreadLogger),
-                                        new object[] { "KA:" + CurrentTime.ToString() });
+                                        LogFromThread("KA:" + CurrentTime.ToString());
                                  
                                     }
                                 }
@@ -939,9 +950,7 @@ namespace TCPUIClient
                                     if (LogGamepadEnabled)
                                     {
 
-                                        txMain.Dispatcher.Invoke(
-                                        new ThreadLoggerCallback(this.ThreadLogger),
-                                        new object[] { GPD.ToString() });
+                                        LogFromThread(GPD);
                                         sw4.WriteLine(GPD);
                                     }
 
