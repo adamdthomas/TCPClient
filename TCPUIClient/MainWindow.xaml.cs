@@ -66,7 +66,7 @@ namespace TCPUIClient
         
         public static bool CurrentlyConnected = false;
         public static bool GamePadEnabled = false;
-        public static bool OutputGPData = false;
+        public static bool EnableLogFile = false;
         public static bool TranslateGPD = false;
         public static bool VideoEnabled = false;
         public static bool VideoControlOn = false;
@@ -83,6 +83,7 @@ namespace TCPUIClient
         public static string LogFullPath = LogPath + LogName;
         public static string cmd;
         public static string VideoMode;
+        public static string UDPMessage = "";
 
         public static Int32 DeadZone = 0;
         public static Int32 txRate = 0;
@@ -167,13 +168,13 @@ namespace TCPUIClient
         {
             if (dicConfig["writetolog"].ToUpper() == "TRUE")
             {
-                OutputGPData = true;
-                cbOutputGPData.IsChecked = true;
+                EnableLogFile = true;
+                cbEnableLogFile.IsChecked = true;
             }
             else
             {
-                OutputGPData = false;
-                cbOutputGPData.IsChecked = false;
+                EnableLogFile = false;
+                cbEnableLogFile.IsChecked = false;
             }
 
             if (dicConfig["keepaliveenabled"].ToUpper() == "TRUE")
@@ -262,6 +263,7 @@ namespace TCPUIClient
         {
             GetConfigData();
             LoadConfigToUI();
+            txStatus.Text = "Welcome!";
         }
 
         #endregion
@@ -291,6 +293,7 @@ namespace TCPUIClient
                 WriteToLog("Client says: " + cmd);
                 int bytesRec = MainSocket.Receive(bytes);
                 data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                txRawResponse.Text = data;
                 WriteToLog("Server says: " + data);
             }
 
@@ -319,7 +322,9 @@ namespace TCPUIClient
                 WriteToLog("Client says: " + cmd);
                 int bytesRec = MainSocket.Receive(bytes);
                 data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                txRawResponse.Text = data;
                 WriteToLog("Server says: " + data);
+
             }
             return data.Split(':');
         }
@@ -483,7 +488,7 @@ namespace TCPUIClient
                     txStatus.Text = "Gamepad Connected!";
                     //  MessageBox.Show("Test GP");
                     //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
-                    Thread GPThread = new Thread(MainWindow.SendGPData);
+                    Thread GPThread = new Thread(SendGPData);
                     GPThread.Start();
                     Thread.Sleep(1000);
                     WriteToLog(GPID);
@@ -518,6 +523,7 @@ namespace TCPUIClient
                 WriteToLog("Client says: " + cmd);
                 int bytesRec = MainSocket.Receive(bytes);
                 data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                txRawResponse.Text = data;
                 WriteToLog("Server says: " + data);
                 string[] AddressParts = data.Split(':');
                 GamePadSocket = ConnectIndependent(AddressParts[0], int.Parse(AddressParts[1]));
@@ -530,7 +536,7 @@ namespace TCPUIClient
                     {
                         //  MessageBox.Show("Test GP");
                         //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
-                        Thread GPThread = new Thread(MainWindow.SendGPDataIndependent);
+                        Thread GPThread = new Thread(SendGPDataIndependent);
                         GPThread.Start();
                         Thread.Sleep(1000);
                         if (GamePadConnected)
@@ -590,12 +596,13 @@ namespace TCPUIClient
                         WriteToLog("Client says: " + cmd);
                         int bytesRec = MainSocket.Receive(bytes);
                         data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                        txRawResponse.Text = data;
                         WriteToLog("Server says: " + data);
                         string[] AddressParts = data.Split(':');
                         GamePadSocketUDP = ConnectIndependentUDP(AddressParts[0], int.Parse(AddressParts[1]));
 
                         //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
-                        Thread GPThread = new Thread(MainWindow.SendGPDataIndependentUDP);
+                        Thread GPThread = new Thread(SendGPDataIndependentUDP);
                         GPThread.Start();
                         Thread.Sleep(1000);
 
@@ -642,8 +649,7 @@ namespace TCPUIClient
                 string[] AddressParts = dicConfig["gamepadaddress"] .Split(':');
                 GamePadSocketUDP = ConnectIndependentUDP(AddressParts[0], int.Parse(AddressParts[1]));
 
-                //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
-                Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPDataIndependentUDP));
+                Thread GPThread = new Thread(new ThreadStart(SendGPDataIndependentUDP));
                 //Thread GPThread = new Thread(MainWindow.SendGPDataIndependentUDP);
                 GPThread.Start();
                 Thread.Sleep(1000);
@@ -666,7 +672,7 @@ namespace TCPUIClient
   
         }
 
-        public static string GamePadDataFilter(string DataToFilter)
+        public  string GamePadDataFilter(string DataToFilter)
         {
             string s = DataToFilter;
             string[] cmds = s.Split(' ');
@@ -753,7 +759,7 @@ namespace TCPUIClient
             return DataToFilter;
         }
 
-        public static void SendGPData()
+        public  void SendGPData()
         {
      
             if (CurrentlyConnected && GamePadEnabled)
@@ -773,7 +779,7 @@ namespace TCPUIClient
                             GPD = GamePadDataFilter(state.ToString());
                             if (GPD != "")
                             {
-                                if (OutputGPData)
+                                if (EnableLogFile)
                                 {
                                     sw.WriteLine(GPD);
                                 }
@@ -794,7 +800,7 @@ namespace TCPUIClient
             } 
         }
 
-        public static void SendGPDataIndependent()
+        public  void SendGPDataIndependent()
         {
 
             if (CurrentlyConnected && GamePadEnabled)
@@ -814,7 +820,7 @@ namespace TCPUIClient
                                 GPD = GamePadDataFilter(state.ToString());
                                 if (GPD != "")
                                 {
-                                    if (OutputGPData)
+                                    if (EnableLogFile)
                                     {
                                         sw3.WriteLine(GPD);
                                     }
@@ -848,7 +854,7 @@ namespace TCPUIClient
             }
         }
 
-        public static void SendGPDataIndependentUDP()
+        public  void SendGPDataIndependentUDP()
         {
 
             if (CurrentlyConnected && GamePadEnabled)
@@ -866,10 +872,32 @@ namespace TCPUIClient
                             foreach (var state in datas)
                             {
                                 GPD = GamePadDataFilter(state.ToString());
+                                if (GPD == "" && UDPMessage != "" )
+                                {
+                                    GPD = UDPMessage;
+                                    UDPMessage = "";
+                                }
+
+                                if (KeepAliveEnabled && GPD == "")
+                                {
+                                    Int64 CurrentTime = GetEPOCHTimeInMilliSeconds();
+                                    Int64 TimeBetweenTransmissions = CurrentTime - LastTransmissionTime;
+
+                                    if (TimeBetweenTransmissions > KARate)
+                                    {
+                                        GPD = CurrentTime.ToString();
+                                    }
+                                }
+                                
+
                                 if (GPD != "")
                                 {
-                                    if (OutputGPData)
+                                    if (EnableLogFile)
                                     {
+
+                                        txMain.Dispatcher.Invoke(
+                                        new ThreadLoggerCallback(this.ThreadLogger),
+                                        new object[] { GPD.ToString() });
                                         sw4.WriteLine(GPD);
                                     }
 
@@ -877,6 +905,8 @@ namespace TCPUIClient
                         
                                     // This call blocks. 
                                     Thread.Sleep(int.Parse(txRate.ToString()));
+                                    
+                                    //This splits off the d pad for use with the foscam video feed
                                     if (VideoControlOn && VideoEnabled && GamePadEnabled && CurrentlyConnected && VideoMode.IndexOf("Foscam") >=0  )
                                     { 
                                         if (GPD.IndexOf("Buttons12:ON") >= 0 || GPD.IndexOf("Buttons13:ON") >= 0 || GPD.IndexOf("Buttons14:ON") >= 0 || GPD.IndexOf("Buttons15:ON") >= 0)
@@ -886,6 +916,7 @@ namespace TCPUIClient
                                     }
 
                                     GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
+                                    LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
 
                                 }
                             }
@@ -974,6 +1005,7 @@ namespace TCPUIClient
                     WriteToLog("Client says: " + cmd);
                     int bytesRec = MainSocket.Receive(bytes);
                     data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                    txRawResponse.Text = data;
                     WriteToLog("Server says: " + data);
                     txStatus.Text = "Gamepad discconected successfully!";
  
@@ -1165,67 +1197,76 @@ namespace TCPUIClient
 
         public void SendMessage()
         {
-            txStatus.Text = "";
-            watch.Reset();
-            watch.Start();
-            byte[] msg = Encoding.UTF8.GetBytes(txMessage.Text);
-            data = "";
-
-            ClientCommandHandler(txMessage.Text);
-
-            if (CurrentlyConnected)
+            if (txMessage.Text != "")
             {
-                // Send the data through the socket.
-                try
+                txStatus.Text = "";
+                watch.Reset();
+                watch.Start();
+                byte[] msg = Encoding.UTF8.GetBytes(txMessage.Text);
+                data = "";
+
+                ClientCommandHandler(txMessage.Text);
+
+                if (CurrentlyConnected)
                 {
-                   
-                    if (txMessage.Text.IndexOf("*") > -1)
+                    // Send the data through the socket.
+                    try
                     {
-                        string[] qty = txMessage.Text.Split('*');
-                        int SendQty = int.Parse(qty[1]);
-                        byte[] msgs = Encoding.ASCII.GetBytes(qty[0]);
-                        // byte[] msgs = Encoding.ASCII.GetBytes(qty[0]);
-                        WriteToLog("Client says: " + txMessage.Text + " " + SendQty.ToString() + " times.");
-                        for (int i = 0; i < SendQty; i++)
+
+                        if (txMessage.Text.IndexOf("*") > -1)
                         {
-                            Thread.Sleep(int.Parse(txRate.ToString()));
-                            int bytesSent = MainSocket.Send(msgs);
+                            string[] qty = txMessage.Text.Split('*');
+                            int SendQty = int.Parse(qty[1]);
+                            byte[] msgs = Encoding.ASCII.GetBytes(qty[0]);
+                            // byte[] msgs = Encoding.ASCII.GetBytes(qty[0]);
+                            WriteToLog("Client says: " + txMessage.Text + " " + SendQty.ToString() + " times.");
+                            for (int i = 0; i < SendQty; i++)
+                            {
+                                Thread.Sleep(int.Parse(txRate.ToString()));
+                                int bytesSent = MainSocket.Send(msgs);
+                            }
+
+                        }
+                        else
+                        {
+                            int bytesSent = MainSocket.Send(msg);
+                            WriteToLog("Client says: " + txMessage.Text);
                         }
 
-                    }
-                    else
-                    {
-                        int bytesSent = MainSocket.Send(msg);
-                        WriteToLog("Client says: " + txMessage.Text);
-                    }
+                        int bytesRec = MainSocket.Receive(bytes);
+                        data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                        txRawResponse.Text = data;
+                        WriteToLog("Server says: " + data);
+                        if (data == "...")
+                        {
+                            watch.Stop();
+                            var elapsedMs = watch.Elapsed;
+                            txStatus.Text = "Total Transaction Time: " + elapsedMs.ToString();
+                        }
+                        else
+                        {
+                            txStatus.Text = data;
 
-                    int bytesRec = MainSocket.Receive(bytes);
-                    data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                    WriteToLog("Server says: " + data);
-                    if (data == "...")
-                    {
-                        watch.Stop();
-                        var elapsedMs = watch.Elapsed;
-                        txStatus.Text = "Total Transaction Time: " + elapsedMs.ToString() + L + data;
-                    }
-                    else
-                    {
-                        txStatus.Text = data;
+                        }
 
-                    }
 
-                    
-                    txMessage.Text = "";
+                        txMessage.Text = "";
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteToLog("Uh oh... Could not communicate with the server.");
+                        txStatus.Text = ex.ToString();
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    WriteToLog("Uh oh... Could not communicate with the server.");
-                    txStatus.Text = ex.ToString();
+                    WriteToLog("Server not connected!");
+
                 }
             }
             else
             {
-                WriteToLog("Server not connected!");
+                WriteToLog("No data entered...");
 
             }
         }
@@ -1245,7 +1286,7 @@ namespace TCPUIClient
             Message = DateTime.Now.ToString("HH:mm:ss") + " " + Message;
             txMain.AppendText(Message + L);
             txMain.ScrollToEnd();
-            if (OutputGPData && !GamePadEnabled)
+            if (EnableLogFile && !GamePadEnabled)
             {
                 try
                 {
@@ -1268,22 +1309,6 @@ namespace TCPUIClient
             Message = DateTime.Now.ToString("HH:mm:ss") + " " + Message;
             txMain.AppendText(Message + L);
             txMain.ScrollToEnd();
-            if (OutputGPData && !GamePadEnabled)
-            {
-                try
-                {
-                    using (StreamWriter sw = File.AppendText(LogFullPath))
-                    {
-                        sw.WriteLine(Message);
-                        sw.Close();
-                    }
-                }
-                catch (Exception l)
-                {
-                    l.ToString();
-                }
-
-            }
         }
 
         public void RunCMD(string CMD)
@@ -1356,6 +1381,14 @@ namespace TCPUIClient
                 string[] gpParts = command.Split('=');
                 dicConfig["gamepadaddress"] = gpParts[1];
                 WriteToLog("Gamepad address is now set to: " + gpParts[1]);
+                txMessage.Text = "";
+            }
+
+            if (command.ToUpper().IndexOf("UDPMESSAGE=") > -1)
+            {
+                string[] gpParts = command.Split('=');
+                UDPMessage = gpParts[1];
+                WriteToLog("UDP massage: "  + gpParts[1] + " will be sent... ");
                 txMessage.Text = "";
             }
 
@@ -1457,7 +1490,7 @@ namespace TCPUIClient
         {
         }
 
-        private void cbOutputGPData_Checked(object sender, RoutedEventArgs e)
+        private void cbEnableLogFile_Checked(object sender, RoutedEventArgs e)
         {
         }
 
@@ -1495,7 +1528,7 @@ namespace TCPUIClient
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
-            var MyTime = GetEPOCHTimeInMilliSeconds();
+    
             Disconnect();
         }
 
@@ -1550,12 +1583,12 @@ namespace TCPUIClient
             dicConfig["translategpd"] = TranslateGPD.ToString();
         }
 
-        private void cbOutputGPData_Click(object sender, RoutedEventArgs e)
+        private void cbEnableLogFile_Click(object sender, RoutedEventArgs e)
         {
             
-            OutputGPData = cbOutputGPData.IsChecked.Value;
-            dicConfig["writetolog"] = OutputGPData.ToString();
-            if (OutputGPData)
+            EnableLogFile = cbEnableLogFile.IsChecked.Value;
+            dicConfig["writetolog"] = EnableLogFile.ToString();
+            if (EnableLogFile)
             {
                 System.IO.Directory.CreateDirectory(LogPath);
                 if (!File.Exists(LogFullPath))
@@ -1710,7 +1743,7 @@ namespace TCPUIClient
 
         private void cbKeepAlive_Click(object sender, RoutedEventArgs e)
         {
-            KeepAliveEnabled = cbVideoControl.IsChecked.Value;
+            KeepAliveEnabled = cbKeepAlive.IsChecked.Value;
             dicConfig["keepaliveenabled"] = cbVideoControl.IsChecked.Value.ToString();
         }
 
