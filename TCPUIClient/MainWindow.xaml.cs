@@ -72,6 +72,7 @@ namespace TCPUIClient
         public static bool VideoControlOn = false;
         public static bool GamePadConnected = false;
         public static bool KeepAliveEnabled = false;
+        public static bool LogGamepadEnabled = false;
         
         public static string L = c1.ToString();
         public static string data = "";
@@ -137,6 +138,7 @@ namespace TCPUIClient
                 dicConfig["videocontrol"] = "true";
                 dicConfig["videoaddress"] = "www.thomasworkshop.com:88";
                 dicConfig["keepaliveenabled"] = "false";
+                dicConfig["loggamepadenabled"] = "false";
                 dicConfig["karate"] = "250";
 
                 SetConfigData();
@@ -166,6 +168,17 @@ namespace TCPUIClient
 
         public void LoadConfigToUI()
         {
+            if (dicConfig["loggamepadenabled"].ToUpper() == "TRUE")
+            {
+                LogGamepadEnabled = true;
+                cbLogGamepad.IsChecked = true;
+            }
+            else
+            {
+                LogGamepadEnabled = false;
+                cbLogGamepad.IsChecked = false;
+            }
+
             if (dicConfig["writetolog"].ToUpper() == "TRUE")
             {
                 EnableLogFile = true;
@@ -892,7 +905,7 @@ namespace TCPUIClient
 
                                 if (GPD != "")
                                 {
-                                    if (EnableLogFile)
+                                    if (LogGamepadEnabled)
                                     {
 
                                         txMain.Dispatcher.Invoke(
@@ -1747,7 +1760,15 @@ namespace TCPUIClient
             dicConfig["keepaliveenabled"] = cbVideoControl.IsChecked.Value.ToString();
         }
 
-    #endregion
+   
+
+        private void cbLogGamepad_Click(object sender, RoutedEventArgs e)
+        {
+            LogGamepadEnabled = cbLogGamepad.IsChecked.Value;
+            dicConfig["loggamepadenabled"] = cbLogGamepad.IsChecked.Value.ToString();
+        }
+
+        #endregion
     }
 
       

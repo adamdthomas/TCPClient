@@ -68,6 +68,7 @@
                     <CheckBox x:Name="cbKeepAlive" Content="Enable Keep Alive" HorizontalAlignment="Left" Margin="7,56,0,0" VerticalAlignment="Top" Foreground="White" Grid.ColumnSpan="2" Width="115" Click="cbKeepAlive_Click"/>
                     <Slider x:Name="slKeepAliveRate" HorizontalAlignment="Left" Margin="86,133,0,0" VerticalAlignment="Top" Width="186" Height="24" Grid.ColumnSpan="2" ValueChanged="slKeepAliveRate_ValueChanged" Minimum="25" Maximum="1500"/>
                     <Label Content="KA Rate" HorizontalAlignment="Left" Margin="8,132,0,0" VerticalAlignment="Top" Foreground="White"/>
+                    <CheckBox x:Name="cbLogGamepad" Content="Log Gamepad Data" Grid.Column="1" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" Foreground="White" Click="cbLogGamepad_Click"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tbVideoType" Header="Video" Margin="0,0,-12,0" HorizontalAlignment="Right" Width="50">
