@@ -30,7 +30,7 @@
         </Image>
         <TabControl HorizontalAlignment="Left" Height="223" Margin="389,18,0,0" VerticalAlignment="Top" Width="282" Background="{x:Null}" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="System" Margin="0" HorizontalAlignment="Left" Width="56">
-                <Grid Margin="4,-2,-4,1">
+                <Grid Margin="4,-2,5,1.4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
@@ -43,6 +43,7 @@
                     <CheckBox x:Name="cbEnableLogFile" Content="Keep Log File" Margin="0,102,159,71" Click="cbEnableLogFile_Click" Foreground="White" Checked="cbEnableLogFile_Checked"/>
                     <TextBox x:Name="txRawResponse" HorizontalAlignment="Left" Height="44" Margin="-1,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175"/>
                     <Label Content="Raw Responses" HorizontalAlignment="Left" Margin="-5,118,0,0" VerticalAlignment="Top" Foreground="White"/>
+                    <CheckBox x:Name="cbRecieveUDP" Content="Recieve UDP Responses" HorizontalAlignment="Left" Margin="113,103,0,0" VerticalAlignment="Top" Foreground="White" Checked="CheckBox_Checked" Click="cbRecieveUDP_Click" Visibility="Hidden"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="tbGamePad" Header="Gamepad" Margin="4,0,-8,0">

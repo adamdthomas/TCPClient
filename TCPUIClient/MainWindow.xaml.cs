@@ -59,6 +59,8 @@ namespace TCPUIClient
         public static Stopwatch watch = Stopwatch.StartNew();
         public static IPEndPoint GameUDPEndPoint;
         public delegate void ThreadLoggerCallback(string message);
+        public delegate void ThreadStatusCallback(string message);
+        public delegate void ThreadRecievedCallback(string message);
 
         public static byte[] bytes = new byte[1024];
         
@@ -73,7 +75,8 @@ namespace TCPUIClient
         public static bool GamePadConnected = false;
         public static bool KeepAliveEnabled = false;
         public static bool LogGamepadEnabled = false;
-        
+        public static bool RecieveUDP = false;
+
         public static string L = c1.ToString();
         public static string data = "";
         public static string GPID = "";
@@ -100,13 +103,10 @@ namespace TCPUIClient
 
 
         #endregion
-
                 
         public MainWindow()
         {
-            
             InitializeComponent();
-
         }
 
         #region ConfigData
@@ -140,6 +140,7 @@ namespace TCPUIClient
                 dicConfig["keepaliveenabled"] = "false";
                 dicConfig["loggamepadenabled"] = "false";
                 dicConfig["karate"] = "250";
+                dicConfig["recieveudp"] = "false";
 
                 SetConfigData();
 
@@ -168,84 +169,113 @@ namespace TCPUIClient
 
         public void LoadConfigToUI()
         {
-            if (dicConfig["loggamepadenabled"].ToUpper() == "TRUE")
+            try
             {
-                LogGamepadEnabled = true;
-                cbLogGamepad.IsChecked = true;
-            }
-            else
-            {
-                LogGamepadEnabled = false;
-                cbLogGamepad.IsChecked = false;
-            }
 
-            if (dicConfig["writetolog"].ToUpper() == "TRUE")
-            {
-                EnableLogFile = true;
-                cbEnableLogFile.IsChecked = true;
-            }
-            else
-            {
-                EnableLogFile = false;
-                cbEnableLogFile.IsChecked = false;
-            }
+                if (dicConfig["recieveudp"].ToUpper() == "TRUE")
+                {
+                    RecieveUDP = true;
+                    cbRecieveUDP.IsChecked = true;
+                }
+                else
+                {
+                    RecieveUDP = false;
+                    cbRecieveUDP.IsChecked = false;
+                }
 
-            if (dicConfig["keepaliveenabled"].ToUpper() == "TRUE")
+                if (dicConfig["loggamepadenabled"].ToUpper() == "TRUE")
+                {
+                    LogGamepadEnabled = true;
+                    cbLogGamepad.IsChecked = true;
+                }
+                else
+                {
+                    LogGamepadEnabled = false;
+                    cbLogGamepad.IsChecked = false;
+                }
+
+                if (dicConfig["writetolog"].ToUpper() == "TRUE")
+                {
+                    EnableLogFile = true;
+                    cbEnableLogFile.IsChecked = true;
+                }
+                else
+                {
+                    EnableLogFile = false;
+                    cbEnableLogFile.IsChecked = false;
+                }
+
+                if (dicConfig["keepaliveenabled"].ToUpper() == "TRUE")
+                {
+
+                    KeepAliveEnabled = true;
+                    cbKeepAlive.IsChecked = true;
+                }
+                else
+                {
+                    KeepAliveEnabled = false;
+                    cbKeepAlive.IsChecked = false;
+                }
+
+                if (dicConfig["translategpd"].ToUpper() == "TRUE")
+                {
+                    TranslateGPD = true;
+                    cbTranslate.IsChecked = true;
+                }
+                else
+                {
+                    TranslateGPD = false;
+                    cbTranslate.IsChecked = false;
+                }
+
+                if (dicConfig["videocontrol"].ToUpper() == "TRUE")
+                {
+                    VideoControlOn = true;
+                    cbVideoControl.IsChecked = true;
+                }
+                else
+                {
+                    VideoControlOn = false;
+                    cbVideoControl.IsChecked = false;
+                }
+
+
+
+                //Set UI
+                txServername.Text = dicConfig["servername"];
+                txPort.Text = dicConfig["port"];
+
+                slDeadZone.Value = double.Parse(dicConfig["deadzone"]);
+                slTXRate.Value = double.Parse(dicConfig["txrate"]);
+                slCenter.Value = double.Parse(dicConfig["center"]);
+                slKeepAliveRate.Value = double.Parse(dicConfig["karate"]);
+
+                cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
+                cbVideoType.SelectedIndex = int.Parse(dicConfig["videomode"]);
+                VideoMode = cbVideoType.Text;
+                ShowGamePadAdvancedControls(false);
+
+
+                //Set Variables
+                DeadZone = Int32.Parse(dicConfig["deadzone"]);
+                txRate = Int32.Parse(dicConfig["txrate"]);
+                Center = Int32.Parse(dicConfig["center"]);
+                KARate = Int32.Parse(dicConfig["karate"]);
+
+            }
+            catch (Exception)
             {
+
+                if (File.Exists(ConfigPath))
+                {
+                    File.Delete(ConfigPath);
+                }
+
+                GetConfigData();
+                txStatus.Text = "Warning!";
+                WriteToLog("Config file has been rebuilt!");
                 
-                KeepAliveEnabled = true;
-                cbKeepAlive.IsChecked = true;
             }
-            else
-            {
-                KeepAliveEnabled = false;
-                cbKeepAlive.IsChecked = false;
-            }
-
-            if (dicConfig["translategpd"].ToUpper() == "TRUE")
-            {
-                TranslateGPD = true;
-                cbTranslate.IsChecked = true;
-            }
-            else
-            {
-                TranslateGPD = false;
-                cbTranslate.IsChecked = false;
-            }
-
-            if (dicConfig["videocontrol"].ToUpper() == "TRUE")
-            {
-                VideoControlOn = true;
-                cbVideoControl.IsChecked = true;
-            }
-            else
-            {
-                VideoControlOn = false;
-                cbVideoControl.IsChecked = false;
-            }
-
-
-           
-            //Set UI
-            txServername.Text = dicConfig["servername"];
-            txPort.Text = dicConfig["port"];
-
-            slDeadZone.Value = double.Parse(dicConfig["deadzone"]);
-            slTXRate.Value = double.Parse(dicConfig["txrate"]);
-            slCenter.Value = double.Parse(dicConfig["center"]);
-            slKeepAliveRate.Value = double.Parse(dicConfig["karate"]);
-
-            cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
-            cbVideoType.SelectedIndex = int.Parse(dicConfig["videomode"]);
-            VideoMode = cbVideoType.Text;
-            ShowGamePadAdvancedControls(false);
-
-
-            //Set Variables
-            DeadZone = Int32.Parse(dicConfig["deadzone"]);
-            txRate = Int32.Parse(dicConfig["txrate"]);
-            Center = Int32.Parse(dicConfig["center"]);
-            KARate = Int32.Parse(dicConfig["karate"]);
 
         }
 
@@ -492,6 +522,23 @@ namespace TCPUIClient
             new ThreadLoggerCallback(this.ThreadLogger),
             new object[] { Message });
         }
+
+        public void StatusFromThread(string Message)
+        {
+            txStatus.Dispatcher.Invoke(
+            new ThreadStatusCallback(this.ThreadStatus),
+            new object[] { Message });
+        }
+
+        public void RecievedFromThread(string Message)
+        {
+
+            txRawResponse.Dispatcher.Invoke(
+            new ThreadRecievedCallback(this.ThreadRecieved),
+            new object[] { Message });
+        }
+
+
 
         public void RunGamePad()
         {
@@ -964,16 +1011,26 @@ namespace TCPUIClient
                                         }
                                     }
 
-
-                                   
-
                                     // This pauses to accomodate TX rate
                                     Thread.Sleep(int.Parse(txRate.ToString()));
 
                                     byte[] msg = Encoding.ASCII.GetBytes(GPD);
                                     GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
                                     LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
+                                    if (RecieveUDP)
+                                    {
+                                         
+                                        //IPHostEntry hostEntry2 = Dns.Resolve("192.168.1.148");
+                                        //IPAddress ip2 = hostEntry2.AddressList[0];
+                                        //IPEndPoint UServer = new IPEndPoint(ip2, 0);
+                                        //UdpClient ServerSock = new UdpClient(UServer);
+                                        //byte[] data = ServerSock.Receive(ref UServer);
+                                        //string RecData = Encoding.ASCII.GetString(data);
+                                        //LogFromThread("RECIEVED: " + RecData);
+                                    }
+    
 
+                                    
                                 }
                             }
                         }
@@ -1367,6 +1424,16 @@ namespace TCPUIClient
             txMain.ScrollToEnd();
         }
 
+       private void ThreadStatus(string Message)
+       {
+           txStatus.Text = Message;
+       }
+
+       private void ThreadRecieved(string Message)
+       {
+           txRawResponse.Text = Message;
+       }
+
         public void RunCMD(string CMD)
         {
             string strCmdText;
@@ -1523,22 +1590,24 @@ namespace TCPUIClient
 
         private void cbGamepadType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+        }
 
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
         }
 
         private void cbVideoType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
         }
+
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
         }
+
         private void txDeadZone_LostFocus(object sender, RoutedEventArgs e)
         {
         }
@@ -1809,6 +1878,16 @@ namespace TCPUIClient
         {
             LogGamepadEnabled = cbLogGamepad.IsChecked.Value;
             dicConfig["loggamepadenabled"] = cbLogGamepad.IsChecked.Value.ToString();
+        }
+
+
+
+
+
+        private void cbRecieveUDP_Click(object sender, RoutedEventArgs e)
+        {
+            RecieveUDP = cbRecieveUDP.IsChecked.Value;
+            dicConfig["recieveudp"] = cbRecieveUDP.IsChecked.Value.ToString();
         }
 
         #endregion
