@@ -28,7 +28,7 @@
                 </LinearGradientBrush>
             </Image.OpacityMask>
         </Image>
-        <TabControl HorizontalAlignment="Left" Height="223" Margin="389,18,0,0" VerticalAlignment="Top" Width="282" Background="{x:Null}" SelectionChanged="TabControl_SelectionChanged">
+        <TabControl HorizontalAlignment="Left" Height="223" Margin="389,18,0,0" VerticalAlignment="Top" Width="291" Background="{x:Null}" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="System" Margin="0" HorizontalAlignment="Left" Width="56">
                 <Grid Margin="4,-2,5,1.4">
                     <Grid.ColumnDefinitions>
@@ -75,18 +75,36 @@
             <TabItem x:Name="tbVideoType" Header="Video" Margin="0,0,-12,0" HorizontalAlignment="Right" Width="50">
                 <Grid Margin="0,-4,0,-1">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="25*"/>
-                        <ColumnDefinition Width="4*"/>
-                        <ColumnDefinition Width="66*"/>
-                        <ColumnDefinition Width="177*"/>
+                        <ColumnDefinition Width="81*"/>
+                        <ColumnDefinition Width="191*"/>
                     </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="cbVideo" Content="Enable Video" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Click="cbVideo_Click" Grid.ColumnSpan="3" Margin="5,11,0,0"/>
-                    <ComboBox x:Name="cbVideoType" HorizontalAlignment="Left" Margin="5,53,0,0" VerticalAlignment="Top" Width="192" Grid.ColumnSpan="4" SelectedIndex="0" SelectionChanged="cbVideoType_SelectionChanged" DropDownClosed="cbVideoType_DropDownClosed">
+                    <CheckBox x:Name="cbVideo" Content="Enable Video" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" Click="cbVideo_Click" Margin="5,11,0,0" Grid.ColumnSpan="2"/>
+                    <ComboBox x:Name="cbVideoType" HorizontalAlignment="Left" Margin="5,53,0,0" VerticalAlignment="Top" Width="192" SelectedIndex="0" SelectionChanged="cbVideoType_SelectionChanged" DropDownClosed="cbVideoType_DropDownClosed" Grid.ColumnSpan="2">
                         <ComboBoxItem Content="Foscam"/>
                         <ComboBoxItem Content="Client Controlled Foscam"/>
                         <ComboBoxItem Content="GStreamer"/>
                     </ComboBox>
-                    <CheckBox x:Name="cbVideoControl" Content="Enable Video Controls" HorizontalAlignment="Left" Margin="5,31,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Foreground="White" Click="cbVideoControl_Click"/>
+                    <CheckBox x:Name="cbVideoControl" Content="Enable Video Controls" HorizontalAlignment="Left" Margin="5,31,0,0" VerticalAlignment="Top" Foreground="White" Click="cbVideoControl_Click" Grid.ColumnSpan="2"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Audio" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="58" Margin="17,0,-17.4,0">
+                <Grid Margin="0,0,-0.4,0.4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="6*"/>
+                        <ColumnDefinition Width="11*"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="cbAudioSource" HorizontalAlignment="Left" VerticalAlignment="Top" Width="266" Margin="6,3,0,0" Grid.ColumnSpan="2" Height="25" SelectionChanged="cbAudioSource_SelectionChanged"/>
+                    <ProgressBar x:Name="prgLevel" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="14" Margin="10,166,0,0" VerticalAlignment="Top" Width="266" Foreground="#FF8F2904"/>
+                    <Slider x:Name="slSampleRate" HorizontalAlignment="Left" Margin="85,111,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="187" ValueChanged="slSampleRate_ValueChanged" Maximum="10000"/>
+                    <Slider x:Name="slFilter" HorizontalAlignment="Left" Margin="85,138,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="187" ValueChanged="slFilter_ValueChanged" Maximum="50"/>
+                    <Slider x:Name="slAmp" HorizontalAlignment="Left" Margin="85,84,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="187" ValueChanged="slAmp_ValueChanged" Maximum="1000"/>
+                    <Button x:Name="btnListen" Content="Listen" HorizontalAlignment="Left" Margin="6,33,0,0" VerticalAlignment="Top" Width="75" Click="btnListen_Click"/>
+                    <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="86,33,0,0" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="2" Click="btnStop_Click"/>
+                    <Button x:Name="btnFindAudio" Content="Detect" Grid.Column="1" HorizontalAlignment="Left" Margin="66.8,33,0,0" VerticalAlignment="Top" Width="105" Click="btnFindAudio_Click"/>
+                    <Label Content="Amplitude" HorizontalAlignment="Left" Margin="10,81,0,0" VerticalAlignment="Top" Width="70" Foreground="White"/>
+                    <Label Content="Sample Rate" HorizontalAlignment="Left" Margin="10,108,0,0" VerticalAlignment="Top" Width="79" Foreground="White"/>
+                    <Label Content="Filter" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top" Width="70" Foreground="White"/>
+                    <CheckBox Content="Send Audio Data Through UDP Stream" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top" Foreground="White" Grid.ColumnSpan="2" Width="262"/>
                 </Grid>
             </TabItem>
         </TabControl>

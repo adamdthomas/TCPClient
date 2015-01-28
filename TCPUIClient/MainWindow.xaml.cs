@@ -29,6 +29,7 @@ using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Chrome;
 using System.Runtime.InteropServices;
 using OpenQA.Selenium.Remote;
+using NAudio.Wave;
 
 
 
@@ -45,8 +46,8 @@ namespace TCPUIClient
     public partial class MainWindow : Window
     {
         #region Variables
+       
         public static string ServerAddress;
-        public static Int32 Port;
         public static string MyMessage;
 
         public static Socket MainSocket;
@@ -58,13 +59,30 @@ namespace TCPUIClient
 
         public static Stopwatch watch = Stopwatch.StartNew();
         public static IPEndPoint GameUDPEndPoint;
+        public static WaveIn waveIn;
+        public enum Direction { UP, DOWN, LEFT, RIGHT };
+
+        public static List<double> LevelList = new List<double>();
+        public static Dictionary<string, string> dicConfig = new Dictionary<string, string>();
+
         public delegate void ThreadLoggerCallback(string message);
         public delegate void ThreadStatusCallback(string message);
         public delegate void ThreadRecievedCallback(string message);
+        public delegate void UpdateLogCallback(string message);
+        public delegate void UpdateLevelCallback(double Level);
 
         public static byte[] bytes = new byte[1024];
         
         public static char c1 = (char)10;
+
+        public static float sample32;
+
+        public static double Amp = 1000;
+        public static double Refresh = 0;
+        public static double LastLev = 0;
+        public static double MAX = 0;
+        public static double MIN = 0;
+        public static double myLevel;
         
         public static bool CurrentlyConnected = false;
         public static bool GamePadEnabled = false;
@@ -76,6 +94,11 @@ namespace TCPUIClient
         public static bool KeepAliveEnabled = false;
         public static bool LogGamepadEnabled = false;
         public static bool RecieveUDP = false;
+        public static bool Printing;
+        public static bool RunCurrent;
+
+        public static int CycleCounter = 0;
+        public static int AudioDevice = 0;
 
         public static string L = c1.ToString();
         public static string data = "";
@@ -93,12 +116,11 @@ namespace TCPUIClient
         public static Int32 txRate = 0;
         public static Int32 Center = 0;
         public static Int32 KARate = 0;
+        public static Int32 SampleRate = 0;
+        public static Int32 Port;
 
         public static Int64 LastTransmissionTime = 0;
 
-        public static Dictionary<string, string> dicConfig = new Dictionary<string, string>();
-
-        public enum Direction { UP, DOWN, LEFT, RIGHT };
 
 
 
@@ -108,6 +130,124 @@ namespace TCPUIClient
         {
             InitializeComponent();
         }
+
+        #region Audio
+
+        private void GetAudioDevices(bool printResults)
+        {
+            List<String> labels = new List<String>();
+
+            int waveInDevices = WaveIn.DeviceCount;
+            for (int waveInDevice = 0; waveInDevice < waveInDevices; waveInDevice++)
+            {
+                WaveInCapabilities deviceInfo = WaveIn.GetCapabilities(waveInDevice);
+                labels.Add(waveInDevice.ToString() + "-" + deviceInfo.ProductName.ToString() + "... ");
+                if (printResults)
+                {
+                    WriteToLog("Device: " + waveInDevice.ToString() + " " + 
+                        deviceInfo.ProductName.ToString() + "... " + 
+                            deviceInfo.Channels.ToString() + " channels");
+                }
+                
+            }
+
+            cbAudioSource.ItemsSource = labels;
+            cbAudioSource.Items.Refresh();  
+        }
+
+        private void UpdateLevel(double Level)
+        {
+            prgLevel.Value = Level;
+        }
+
+        public void StartListening()
+        {
+            Printing = true;
+            record();
+            Thread test = new Thread(ProcessSample);
+            test.Start();
+        }
+
+        public void StopListening()
+        {
+            waveIn.StopRecording();
+            prgLevel.Value = 0;
+        }
+
+        public void record()
+        {
+            waveIn = new WaveIn();
+            waveIn.DeviceNumber = 0;
+            waveIn.DataAvailable += waveIn_DataAvailable;
+            int sampleRate = 8000; // 8 kHz
+            int channels = 1; // mono
+            waveIn.WaveFormat = new WaveFormat(sampleRate, channels);
+            try
+            {
+                waveIn.StartRecording();
+            }
+            catch (Exception w)
+            {
+
+                w.ToString();
+            }
+            
+        }
+
+        private void waveIn_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            for (int index = 0; index < e.BytesRecorded; index += 2)
+            {
+                short sample = (short)((e.Buffer[index + 1] << 8) |
+                                        e.Buffer[index + 0]);
+                sample32 = sample / 32768f;
+                var num = Math.Round((System.Convert.ToDouble(sample32) * Amp), 0);
+                LevelList.Add(num);
+                try
+                {
+                    MAX = LevelList.Max();
+                    MIN = LevelList.Min();
+                }
+                catch (Exception p)
+                {
+                    p.ToString();
+                }
+
+            }
+        }
+
+        public void ProcessSample()
+        {
+            while (Printing)
+            {
+                if (LevelList.Count > SampleRate)
+                {
+                    try
+                    {
+                        // 
+                        double CurLev = MAX - MIN;
+                        if (CurLev < LastLev + Refresh && CurLev > LastLev - Refresh)
+                        {
+                            prgLevel.Dispatcher.Invoke(new UpdateLevelCallback(this.UpdateLevel), new object[] { LastLev });
+                        }
+                        else
+                        {
+                            prgLevel.Dispatcher.Invoke(new UpdateLevelCallback(this.UpdateLevel), new object[] { CurLev });
+                            LastLev = CurLev;
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        e.ToString();
+                    }
+                    LevelList.Clear();
+
+                }
+            }
+        }
+
+        #endregion
 
         #region ConfigData
 
@@ -142,6 +282,11 @@ namespace TCPUIClient
                 dicConfig["karate"] = "250";
                 dicConfig["recieveudp"] = "false";
 
+                dicConfig["amplitude"] = "100";
+                dicConfig["samplerate"] = "0";
+                dicConfig["filter"] = "0";
+                dicConfig["audiodevice"] = "0";
+
                 SetConfigData();
 
             }
@@ -169,9 +314,12 @@ namespace TCPUIClient
 
         public void LoadConfigToUI()
         {
+
+            GetAudioDevices(false);
+
             try
             {
-
+                
                 if (dicConfig["recieveudp"].ToUpper() == "TRUE")
                 {
                     RecieveUDP = true;
@@ -249,9 +397,14 @@ namespace TCPUIClient
                 slTXRate.Value = double.Parse(dicConfig["txrate"]);
                 slCenter.Value = double.Parse(dicConfig["center"]);
                 slKeepAliveRate.Value = double.Parse(dicConfig["karate"]);
+                slSampleRate.Value = double.Parse(dicConfig["samplerate"]);
+                slAmp.Value = double.Parse(dicConfig["amplitude"]);
+                slFilter.Value = double.Parse(dicConfig["filter"]);
 
                 cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
                 cbVideoType.SelectedIndex = int.Parse(dicConfig["videomode"]);
+                cbAudioSource.SelectedIndex = int.Parse(dicConfig["audiodevice"]);
+
                 VideoMode = cbVideoType.Text;
                 ShowGamePadAdvancedControls(false);
 
@@ -537,8 +690,6 @@ namespace TCPUIClient
             new ThreadRecievedCallback(this.ThreadRecieved),
             new object[] { Message });
         }
-
-
 
         public void RunGamePad()
         {
@@ -1019,14 +1170,7 @@ namespace TCPUIClient
                                     LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
                                     if (RecieveUDP)
                                     {
-                                         
-                                        //IPHostEntry hostEntry2 = Dns.Resolve("192.168.1.148");
-                                        //IPAddress ip2 = hostEntry2.AddressList[0];
-                                        //IPEndPoint UServer = new IPEndPoint(ip2, 0);
-                                        //UdpClient ServerSock = new UdpClient(UServer);
-                                        //byte[] data = ServerSock.Receive(ref UServer);
-                                        //string RecData = Encoding.ASCII.GetString(data);
-                                        //LogFromThread("RECIEVED: " + RecData);
+     
                                     }
     
 
@@ -1890,7 +2034,54 @@ namespace TCPUIClient
             dicConfig["recieveudp"] = cbRecieveUDP.IsChecked.Value.ToString();
         }
 
+
+
+        private void btnFindAudio_Click(object sender, RoutedEventArgs e)
+        {
+            GetAudioDevices(true);
+        }
+
+        private void btnListen_Click(object sender, RoutedEventArgs e)
+        {
+            StartListening();
+        }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            StopListening();
+        }
+
+        private void slAmp_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Amp = slAmp.Value;
+            txStatus.Text = "Amplitude set to: " + Math.Round(slAmp.Value, 0).ToString();
+            dicConfig["amplitude"] = Math.Round(slAmp.Value, 0).ToString();
+
+        }
+
+        private void slSampleRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            SampleRate = Convert.ToInt32(slSampleRate.Value);
+            txStatus.Text = "Sample rate set to: " + Math.Round(slSampleRate.Value, 0).ToString();
+            dicConfig["samplerate"] = Math.Round(slSampleRate.Value, 0).ToString();
+        }
+
+        private void slFilter_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Refresh = slFilter.Value;
+            txStatus.Text = "Filter set to: " + Math.Round(slFilter.Value, 0).ToString();
+            dicConfig["filter"] = Math.Round(slFilter.Value, 0).ToString();
+        }
+
+        private void cbAudioSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            dicConfig["audiodevice"] = cbAudioSource.SelectedIndex.ToString();
+            AudioDevice = cbAudioSource.SelectedIndex;
+        }
+
+
         #endregion
+
     }
 
       
