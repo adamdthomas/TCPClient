@@ -47,8 +47,7 @@ namespace TCPUIClient
     {
         #region Variables
        
-        public static string ServerAddress;
-        public static string MyMessage;
+
 
         public static Socket MainSocket;
         public static Socket GamePadSocket;
@@ -83,7 +82,10 @@ namespace TCPUIClient
         public static double MAX = 0;
         public static double MIN = 0;
         public static double myLevel;
-        
+        public static double LastLevelSent = 0;
+        public static double tempLevel = 0;
+
+        public static bool SendAudioDataOverUDP = false;
         public static bool CurrentlyConnected = false;
         public static bool GamePadEnabled = false;
         public static bool EnableLogFile = false;
@@ -97,8 +99,11 @@ namespace TCPUIClient
         public static bool Printing;
         public static bool RunCurrent;
 
+        
+
         public static int CycleCounter = 0;
         public static int AudioDevice = 0;
+
 
         public static string L = c1.ToString();
         public static string data = "";
@@ -111,6 +116,10 @@ namespace TCPUIClient
         public static string cmd;
         public static string VideoMode;
         public static string UDPMessage = "";
+        public static string ServerAddress;
+        public static string MyMessage;
+        public static string AudioControl;
+        public static string LastGPMessage;
 
         public static Int32 DeadZone = 0;
         public static Int32 txRate = 0;
@@ -176,8 +185,12 @@ namespace TCPUIClient
 
         public void record()
         {
+           
+            //string[] words = Device.Split('');
+            int ADnum = cbAudioSource.SelectedIndex;
             waveIn = new WaveIn();
-            waveIn.DeviceNumber = 0;
+
+            waveIn.DeviceNumber = ADnum;
             waveIn.DataAvailable += waveIn_DataAvailable;
             int sampleRate = 8000; // 8 kHz
             int channels = 1; // mono
@@ -188,7 +201,6 @@ namespace TCPUIClient
             }
             catch (Exception w)
             {
-
                 w.ToString();
             }
             
@@ -229,10 +241,12 @@ namespace TCPUIClient
                         if (CurLev < LastLev + Refresh && CurLev > LastLev - Refresh)
                         {
                             prgLevel.Dispatcher.Invoke(new UpdateLevelCallback(this.UpdateLevel), new object[] { LastLev });
+                            SendAudioData(LastLev);
                         }
                         else
                         {
                             prgLevel.Dispatcher.Invoke(new UpdateLevelCallback(this.UpdateLevel), new object[] { CurLev });
+                            SendAudioData(CurLev);
                             LastLev = CurLev;
                         }
 
@@ -245,6 +259,36 @@ namespace TCPUIClient
 
                 }
             }
+        }
+
+        public void SendAudioData(double Level)
+        {
+            
+            if (SendAudioDataOverUDP && GamePadConnected)
+            {
+  
+                if (Level != LastLevelSent)
+                {
+                    tempLevel = Math.Round(Level * 1.8, 0);
+                    if (tempLevel > 180)
+                    {
+                        tempLevel = 180;
+                    }
+                    if (tempLevel < 0)
+                    {
+                        tempLevel = 0;
+                    }
+
+                    AudioControl = "Audio:" + tempLevel.ToString() + "~"; //RotationZ:84~
+                    byte[] msg = Encoding.ASCII.GetBytes(AudioControl);
+                    GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
+                    LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
+                    LastLevelSent = tempLevel; 
+                }
+                LastLevelSent = Level; 
+            }
+
+
         }
 
         #endregion
@@ -281,7 +325,7 @@ namespace TCPUIClient
                 dicConfig["loggamepadenabled"] = "false";
                 dicConfig["karate"] = "250";
                 dicConfig["recieveudp"] = "false";
-
+                dicConfig["sendaudiodataoverupd"] = "true";
                 dicConfig["amplitude"] = "100";
                 dicConfig["samplerate"] = "0";
                 dicConfig["filter"] = "0";
@@ -319,7 +363,17 @@ namespace TCPUIClient
 
             try
             {
-                
+                if (dicConfig["sendaudiodataoverupd"].ToUpper() == "TRUE")
+                {
+                    SendAudioDataOverUDP = true;
+                    cbSendAudioDataOverUDP.IsChecked = true;
+                }
+                else
+                {
+                    SendAudioDataOverUDP = false;
+                    cbSendAudioDataOverUDP.IsChecked = false;
+                }
+
                 if (dicConfig["recieveudp"].ToUpper() == "TRUE")
                 {
                     RecieveUDP = true;
@@ -1123,6 +1177,7 @@ namespace TCPUIClient
 
                                 if (TimeBetweenTransmissions > KARate)
                                 {
+
                                     byte[] msg = Encoding.ASCII.GetBytes("KA:" + CurrentTime.ToString());
                                     GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
                                     LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
@@ -1145,12 +1200,7 @@ namespace TCPUIClient
                           
                                 if (GPD != "")
                                 {
-                                    if (LogGamepadEnabled)
-                                    {
 
-                                        LogFromThread(GPD);
-                                        sw4.WriteLine(GPD);
-                                    }
 
                                     
                                     //This splits off the d pad for use with the foscam video feed
@@ -1164,10 +1214,20 @@ namespace TCPUIClient
 
                                     // This pauses to accomodate TX rate
                                     Thread.Sleep(int.Parse(txRate.ToString()));
+                                    if (LastGPMessage != GPD)
+                                    {
+                                        if (LogGamepadEnabled)
+                                        {
+                                            LogFromThread(GPD);
+                                            sw4.WriteLine(GPD);
+                                        }
 
-                                    byte[] msg = Encoding.ASCII.GetBytes(GPD);
-                                    GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
-                                    LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
+                                        byte[] msg = Encoding.ASCII.GetBytes(GPD);
+                                        GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
+                                        LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
+                                    }
+                                    LastGPMessage = GPD;
+                         
                                     if (RecieveUDP)
                                     {
      
@@ -1931,7 +1991,10 @@ namespace TCPUIClient
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            DisconnectVideo();
+            DisconnectGamePad();
             SetConfigData();
+            Application.Current.Shutdown();
         }
 
 
@@ -2081,6 +2144,14 @@ namespace TCPUIClient
 
 
         #endregion
+
+        private void cbSendAudioDataOverUDP_Click(object sender, RoutedEventArgs e)
+        {
+            SendAudioDataOverUDP = cbSendAudioDataOverUDP.IsChecked.Value;
+            dicConfig["sendaudiodataoverupd"] = cbSendAudioDataOverUDP.IsChecked.Value.ToString();
+        }
+
+
 
     }
 
