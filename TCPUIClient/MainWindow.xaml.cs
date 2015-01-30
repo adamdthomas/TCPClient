@@ -1701,6 +1701,49 @@ namespace TCPUIClient
             txStatus.Text = "You're welcome...";
         }
 
+        public void RunScript(string FileLocation)
+        {
+            int SendQty = 1;
+            if (FileLocation.IndexOf("*") > -1)
+            {
+                string[] qty = FileLocation.Split('*');
+                SendQty = int.Parse(qty[1]);
+                FileLocation = qty[0];
+            }
+
+            if (FileLocation.ToUpper() == "DEFAULT" || FileLocation.ToUpper() == "D")
+            {
+                FileLocation = @"C:\Temp\script.txt";
+            }
+
+            LogFromThread("Running Script Located at: " + FileLocation);
+            System.Collections.Generic.IEnumerable<String> lines = File.ReadLines(FileLocation);
+            int count = 0;
+            for (int i = 0; i < SendQty; i++)
+            {
+                foreach (var item in lines)
+                {
+                    if (item.IndexOf("//") != 0 && item != "")
+                    {
+                        count++;
+                        string[] InstructionSet = item.Split(',');
+
+                        LogFromThread(InstructionSet[0]);
+                        if (GamePadConnected)
+                        {
+                            byte[] msg = Encoding.ASCII.GetBytes(InstructionSet[0]);
+                            GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
+                            LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
+
+
+                        }
+                        Thread.Sleep(int.Parse(InstructionSet[1]));
+                    }
+                }
+                LogFromThread("Script finished running " + count + " commands successfully!");
+            }
+        }
+
         public void  ClientCommandHandler(string command)
         {
             if (command.ToUpper().IndexOf("GAMEPADADDRESS=") > -1)
@@ -1709,6 +1752,14 @@ namespace TCPUIClient
                 dicConfig["gamepadaddress"] = gpParts[1];
                 WriteToLog("Gamepad address is now set to: " + gpParts[1]);
                 txMessage.Text = "";
+            }
+
+            if (command.ToUpper().IndexOf("RUN=") > -1)
+            {
+                string[] gpParts = command.Split('=');
+                Thread myNewThread = new Thread(() => RunScript(gpParts[1]));
+                myNewThread.Start();
+
             }
 
             if (command.ToUpper().IndexOf("UDPMESSAGE=") > -1)
@@ -2143,7 +2194,7 @@ namespace TCPUIClient
         }
 
 
-        #endregion
+        
 
         private void cbSendAudioDataOverUDP_Click(object sender, RoutedEventArgs e)
         {
@@ -2151,7 +2202,7 @@ namespace TCPUIClient
             dicConfig["sendaudiodataoverupd"] = cbSendAudioDataOverUDP.IsChecked.Value.ToString();
         }
 
-
+        #endregion
 
     }
 
