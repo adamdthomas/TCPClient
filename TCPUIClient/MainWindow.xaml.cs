@@ -1641,7 +1641,7 @@ namespace TCPUIClient
         public void RunCMD(string CMD)
         {
             string strCmdText;
-            strCmdText = "/C " + CMD; //copy /b Image1.jpg + Archive.rar Image2.jpg";
+            strCmdText = "/C " + CMD; //copy /b Image1.jpg + Archive.rar Image2.jpgTEST";
             System.Diagnostics.Process.Start("CMD.exe", strCmdText);
         }
 
