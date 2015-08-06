@@ -960,6 +960,7 @@ namespace TCPUIClient
                 case "Sliders0":
                 case "Sliders1":
                 case "RotationZ":
+                case "RotationY":
                 case "X":
                 case "Y":
                 case "Z":
