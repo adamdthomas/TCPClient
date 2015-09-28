@@ -1,7 +1,7 @@
 ﻿<Window x:Name="wnMain" x:Class="TCPUIClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TCP/UDP Socket Client v3.0.1" Height="368.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
+        Title="TCP/UDP Socket Client v3.1.0" Height="368.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
     <Grid Height="341" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
         <Grid.Background>
             <ImageBrush ImageSource="black-texture-background-wallpaper-sfv11hls.jpg"/>
@@ -46,7 +46,7 @@
                     <CheckBox x:Name="cbRecieveUDP" Content="Recieve UDP Responses" HorizontalAlignment="Left" Margin="113,103,0,0" VerticalAlignment="Top" Foreground="White" Checked="CheckBox_Checked" Click="cbRecieveUDP_Click" Visibility="Hidden"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tbGamePad" Header="Gamepad" Margin="4,0,-8,0">
+            <TabItem x:Name="tbGamePad" Header="Gamepad" Margin="2,0,1,0">
                 <Grid Margin="0,3,0,-2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="67*"/>
@@ -72,7 +72,7 @@
                     <CheckBox x:Name="cbLogGamepad" Content="Log Gamepad Data" Grid.Column="1" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" Foreground="White" Click="cbLogGamepad_Click"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="tbVideoType" Header="Video" Margin="0,0,-12,0" HorizontalAlignment="Right" Width="50">
+            <TabItem x:Name="tbVideoType" Header="Video" Margin="0,0,-2,0" HorizontalAlignment="Right" Width="46">
                 <Grid Margin="0,-4,0,-1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="81*"/>
@@ -87,7 +87,7 @@
                     <CheckBox x:Name="cbVideoControl" Content="Enable Video Controls" HorizontalAlignment="Left" Margin="7,63,0,0" VerticalAlignment="Top" Foreground="White" Click="cbVideoControl_Click" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Audio" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="58" Margin="18,0,-18.4,0">
+            <TabItem Header="Audio" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="50" Margin="5,0,0,0">
                 <Grid Margin="0,0,-0.4,0.4">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="6*"/>
@@ -106,6 +106,39 @@
                     <Label Content="Filter" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top" Width="70" Foreground="White"/>
                     <CheckBox x:Name="cbSendAudioDataOverUDP" Content="Send Audio Data Through UDP Stream" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top" Foreground="White" Grid.ColumnSpan="2" Width="262" Click="cbSendAudioDataOverUDP_Click"/>
                 </Grid>
+            </TabItem>
+            <TabItem x:Name="Animatronics" Margin="3,0,-3,-1" Header="Advanced">
+                <Grid Margin="0,9,0,-9">
+                    <Slider x:Name="slAxis1Min" HorizontalAlignment="Left" Margin="40,22,0,0" VerticalAlignment="Top" Width="78" ValueChanged="slAxis1Min_ValueChanged" Maximum="180" SmallChange="1"/>
+                    <Label Content="Axis 1" HorizontalAlignment="Left" Margin="0,21,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
+                    <Label Content="Axis 2" HorizontalAlignment="Left" Margin="0,44,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
+                    <Label Content="Axis 3" HorizontalAlignment="Left" Margin="0,71,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.525,2.692"/>
+                    <Label Content="Axis 4" HorizontalAlignment="Left" Margin="0,97,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.45,3"/>
+                    <Label Content="Axis 5" HorizontalAlignment="Left" Margin="0,123,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.4,4.462"/>
+                    <Label Content="Axis 6" HorizontalAlignment="Left" Margin="0,149,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
+                    <Label Content="Min" HorizontalAlignment="Left" Margin="54,-4,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
+                    <Label Content="Mid" HorizontalAlignment="Left" Margin="139,-4,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="3.125,-0.346"/>
+                    <Label Content="Max" HorizontalAlignment="Left" Margin="216,-4,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="6.175,-0.5"/>
+                    <Slider x:Name="slAxis1Mid" HorizontalAlignment="Left" Margin="118,21,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="1.397,0.545" Maximum="180" SmallChange="1" Value="90" ValueChanged="slAxis1Mid_ValueChanged"/>
+                    <Slider x:Name="slAxis1Max" HorizontalAlignment="Left" Margin="196,21,0,0" VerticalAlignment="Top" Width="78" Maximum="180" SmallChange="1" Value="180" ValueChanged="slAxis1Max_ValueChanged"/>
+                    <Slider x:Name="slAxis2Mid" HorizontalAlignment="Left" Margin="118,48,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="1.397,0.545" Maximum="180" SmallChange="1" Value="90" ValueChanged="slAxis2Mid_ValueChanged"/>
+                    <Slider x:Name="slAxis2Max" HorizontalAlignment="Left" Margin="196,48,0,0" VerticalAlignment="Top" Width="78" Maximum="180" SmallChange="1" Value="180" ValueChanged="slAxis2Max_ValueChanged"/>
+                    <Slider x:Name="slAxis2Min" HorizontalAlignment="Left" Margin="40,49,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.436,2.682" SmallChange="1" Maximum="180" ValueChanged="slAxis2Min_ValueChanged"/>
+                    <Slider x:Name="slAxis3Mid" HorizontalAlignment="Left" Margin="118,75,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="1.397,0.545" Maximum="180" SmallChange="1" Value="90" ValueChanged="slAxis3Mid_ValueChanged"/>
+                    <Slider x:Name="slAxis3Max" HorizontalAlignment="Left" Margin="196,75,0,0" VerticalAlignment="Top" Width="78" Maximum="180" SmallChange="1" Value="180" ValueChanged="slAxis3Max_ValueChanged"/>
+                    <Slider x:Name="slAxis3Min" HorizontalAlignment="Left" Margin="40,76,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.436,2.682" SmallChange="1" Maximum="180" ValueChanged="slAxis3Min_ValueChanged"/>
+                    <Slider x:Name="slAxis4Mid" HorizontalAlignment="Left" Margin="118,102,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="1.397,0.545" Maximum="180" SmallChange="1" Value="90" ValueChanged="slAxis4Mid_ValueChanged"/>
+                    <Slider x:Name="slAxis4Max" HorizontalAlignment="Left" Margin="196,102,0,0" VerticalAlignment="Top" Width="78" Maximum="180" SmallChange="1" Value="180" ValueChanged="slAxis4Max_ValueChanged"/>
+                    <Slider x:Name="slAxis4Min" HorizontalAlignment="Left" Margin="40,103,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.436,2.682" SmallChange="1" Maximum="180" ValueChanged="slAxis4Min_ValueChanged"/>
+                    <Slider x:Name="slAxis5Mid" HorizontalAlignment="Left" Margin="118,129,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="1.397,0.545" Maximum="180" SmallChange="1" Value="90" ValueChanged="slAxis5Mid_ValueChanged"/>
+                    <Slider x:Name="slAxis5Max" HorizontalAlignment="Left" Margin="196,129,0,0" VerticalAlignment="Top" Width="78" Maximum="180" SmallChange="1" Value="180" ValueChanged="slAxis5Max_ValueChanged"/>
+                    <Slider x:Name="slAxis5Min" HorizontalAlignment="Left" Margin="40,130,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.436,2.682" SmallChange="1" Maximum="180" ValueChanged="slAxis5Min_ValueChanged"/>
+                    <Slider x:Name="slAxis6Mid" HorizontalAlignment="Left" Margin="118,155,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="1.397,0.545" Maximum="180" SmallChange="1" Value="90" ValueChanged="slAxis6Mid_ValueChanged"/>
+                    <Slider x:Name="slAxis6Max" HorizontalAlignment="Left" Margin="196,155,0,0" VerticalAlignment="Top" Width="78" Maximum="180" SmallChange="1" Value="180" ValueChanged="slAxis6Max_ValueChanged"/>
+                    <Slider x:Name="slAxis6Min" HorizontalAlignment="Left" Margin="40,156,0,0" VerticalAlignment="Top" Width="78" RenderTransformOrigin="0.436,2.682" SmallChange="1" Maximum="180" ValueChanged="slAxis6Min_ValueChanged"/>
+
+                </Grid>
+
             </TabItem>
         </TabControl>
 

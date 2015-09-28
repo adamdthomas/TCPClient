@@ -127,12 +127,27 @@ namespace TCPUIClient
         public static Int32 KARate = 0;
         public static Int32 SampleRate = 0;
         public static Int32 Port;
-
+        public static Int32 Axis1Min = 0;
+        public static Int32 Axis1Mid = 90;
+        public static Int32 Axis1Max = 180;
+        public static Int32 Axis2Min = 0;
+        public static Int32 Axis2Mid = 90;
+        public static Int32 Axis2Max = 180;
+        public static Int32 Axis3Min = 0;
+        public static Int32 Axis3Mid = 90;
+        public static Int32 Axis3Max = 180;
+        public static Int32 Axis4Min = 0;
+        public static Int32 Axis4Mid = 90;
+        public static Int32 Axis4Max = 180;
+        public static Int32 Axis5Min = 0;
+        public static Int32 Axis5Mid = 90;
+        public static Int32 Axis5Max = 180;
+        public static Int32 Axis6Min = 0;
+        public static Int32 Axis6Mid = 90;
+        public static Int32 Axis6Max = 180;
+        
         public static Int64 LastTransmissionTime = 0;
-
-
-
-
+        
         #endregion
                 
         public MainWindow()
@@ -331,6 +346,31 @@ namespace TCPUIClient
                 dicConfig["filter"] = "0";
                 dicConfig["audiodevice"] = "0";
 
+
+                dicConfig["Axis1Min"] = "0";
+                dicConfig["Axis1Mid"] = "90";
+                dicConfig["Axis1Max"] = "180";
+
+                dicConfig["Axis2Min"] = "0";
+                dicConfig["Axis2Mid"] = "90";
+                dicConfig["Axis2Max"] = "180";
+
+                dicConfig["Axis3Min"] = "0";
+                dicConfig["Axis3Mid"] = "90";
+                dicConfig["Axis3Max"] = "180";
+
+                dicConfig["Axis4Min"] = "0";
+                dicConfig["Axis4Mid"] = "90";
+                dicConfig["Axis4Max"] = "180";
+
+                dicConfig["Axis5Min"] = "0";
+                dicConfig["Axis5Mid"] = "90";
+                dicConfig["Axis5Max"] = "180";
+
+                dicConfig["Axis6Min"] = "0";
+                dicConfig["Axis6Mid"] = "90";
+                dicConfig["Axis6Max"] = "180";
+           
                 SetConfigData();
 
             }
@@ -455,6 +495,33 @@ namespace TCPUIClient
                 slAmp.Value = double.Parse(dicConfig["amplitude"]);
                 slFilter.Value = double.Parse(dicConfig["filter"]);
 
+
+                slAxis1Min.Value = double.Parse(dicConfig["Axis1Min"]);
+                slAxis1Mid.Value = double.Parse(dicConfig["Axis1Mid"]);
+                slAxis1Max.Value = double.Parse(dicConfig["Axis1Max"]);
+
+                slAxis2Min.Value = double.Parse(dicConfig["Axis2Min"]);
+                slAxis2Mid.Value = double.Parse(dicConfig["Axis2Mid"]);
+                slAxis2Max.Value = double.Parse(dicConfig["Axis2Max"]);
+
+                slAxis3Min.Value = double.Parse(dicConfig["Axis3Min"]);
+                slAxis3Mid.Value = double.Parse(dicConfig["Axis3Mid"]);
+                slAxis3Max.Value = double.Parse(dicConfig["Axis3Max"]);
+
+                slAxis4Min.Value = double.Parse(dicConfig["Axis4Min"]);
+                slAxis4Mid.Value = double.Parse(dicConfig["Axis4Mid"]);
+                slAxis4Max.Value = double.Parse(dicConfig["Axis4Max"]);
+
+                slAxis5Min.Value = double.Parse(dicConfig["Axis5Min"]);
+                slAxis5Mid.Value = double.Parse(dicConfig["Axis5Mid"]);
+                slAxis5Max.Value = double.Parse(dicConfig["Axis5Max"]);
+
+                slAxis6Min.Value = double.Parse(dicConfig["Axis6Min"]);
+                slAxis6Mid.Value = double.Parse(dicConfig["Axis6Mid"]);
+                slAxis6Max.Value = double.Parse(dicConfig["Axis6Max"]);
+
+
+
                 cbGamepadType.SelectedIndex = int.Parse(dicConfig["gamepadmode"]);
                 cbVideoType.SelectedIndex = int.Parse(dicConfig["videomode"]);
                 cbAudioSource.SelectedIndex = int.Parse(dicConfig["audiodevice"]);
@@ -534,27 +601,36 @@ namespace TCPUIClient
 
         public void DisconnectVideo()
         {
-            if (cbVideoType.Text != "Client Controlled Foscam")
+            try
             {
-                cmd = "<VIDEOKILL>";
-                byte[] msg = Encoding.UTF8.GetBytes(cmd);
-                data = "";
-                int bytesSent = MainSocket.Send(msg);
-                WriteToLog("Client says: " + cmd);
-                int bytesRec = MainSocket.Receive(bytes);
-                data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                txRawResponse.Text = data;
-                WriteToLog("Server says: " + data);
-            }
+                if (cbVideoType.Text != "Client Controlled Foscam")
+                {
+                    cmd = "<VIDEOKILL>";
+                    byte[] msg = Encoding.UTF8.GetBytes(cmd);
+                    data = "";
+                    int bytesSent = MainSocket.Send(msg);
+                    WriteToLog("Client says: " + cmd);
+                    int bytesRec = MainSocket.Receive(bytes);
+                    data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                    txRawResponse.Text = data;
+                    WriteToLog("Server says: " + data);
+                }
 
-            if (cbVideoType.Text == "Foscam" || cbVideoType.Text == "Client Controlled Foscam")
-            {
-                DisconnectVideoFC();
+                if (cbVideoType.Text == "Foscam" || cbVideoType.Text == "Client Controlled Foscam")
+                {
+                    DisconnectVideoFC();
+                }
+                else if (cbVideoType.Text == "GStreamer")
+                {
+                    DisconnectVideoGS();
+                }
             }
-            else if (cbVideoType.Text == "GStreamer")
+            catch (Exception e)
             {
-                DisconnectVideoGS();
+                
+          
             }
+         
         }
 
         public string[] GetVideoInfo()
@@ -1843,6 +1919,136 @@ namespace TCPUIClient
 
         #region UI
 
+        #region Trim/advanced
+
+
+        private void slAxis1Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis1Min = Int32.Parse(Math.Round(slAxis1Min.Value, 0).ToString());
+            txStatus.Text = "Axis 1 Min set to: " + Math.Round(slAxis1Min.Value, 0).ToString();
+            dicConfig["Axis1Min"] = Math.Round(slAxis1Min.Value, 0).ToString();
+        }
+
+        private void slAxis2Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis2Min = Int32.Parse(Math.Round(slAxis2Min.Value, 0).ToString());
+            txStatus.Text = "Axis 2 Min set to: " + Math.Round(slAxis2Min.Value, 0).ToString();
+            dicConfig["Axis2Min"] = Math.Round(slAxis2Min.Value, 0).ToString();
+        }
+
+        private void slAxis3Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis3Min = Int32.Parse(Math.Round(slAxis3Min.Value, 0).ToString());
+            txStatus.Text = "Axis 3 Min set to: " + Math.Round(slAxis3Min.Value, 0).ToString();
+            dicConfig["Axis3Min"] = Math.Round(slAxis3Min.Value, 0).ToString();
+        }
+
+        private void slAxis4Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis4Min = Int32.Parse(Math.Round(slAxis4Min.Value, 0).ToString());
+            txStatus.Text = "Axis 4 Min set to: " + Math.Round(slAxis4Min.Value, 0).ToString();
+            dicConfig["Axis4Min"] = Math.Round(slAxis4Min.Value, 0).ToString();
+        }
+
+        private void slAxis5Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis5Min = Int32.Parse(Math.Round(slAxis5Min.Value, 0).ToString());
+            txStatus.Text = "Axis 5 Min set to: " + Math.Round(slAxis5Min.Value, 0).ToString();
+            dicConfig["Axis5Min"] = Math.Round(slAxis5Min.Value, 0).ToString();
+        }
+
+        private void slAxis6Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis6Min = Int32.Parse(Math.Round(slAxis6Min.Value, 0).ToString());
+            txStatus.Text = "Axis 6 Min set to: " + Math.Round(slAxis6Min.Value, 0).ToString();
+            dicConfig["Axis6Min"] = Math.Round(slAxis6Min.Value, 0).ToString();
+        }
+
+        private void slAxis1Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis1Mid = Int32.Parse(Math.Round(slAxis1Mid.Value, 0).ToString());
+            txStatus.Text = "Axis 1 Mid set to: " + Math.Round(slAxis1Mid.Value, 0).ToString();
+            dicConfig["Axis1Mid"] = Math.Round(slAxis1Mid.Value, 0).ToString();
+        }
+
+        private void slAxis2Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis2Mid = Int32.Parse(Math.Round(slAxis2Mid.Value, 0).ToString());
+            txStatus.Text = "Axis 2 Mid set to: " + Math.Round(slAxis2Mid.Value, 0).ToString();
+            dicConfig["Axis2Mid"] = Math.Round(slAxis2Mid.Value, 0).ToString();
+        }
+
+        private void slAxis3Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis3Mid = Int32.Parse(Math.Round(slAxis3Mid.Value, 0).ToString());
+            txStatus.Text = "Axis 3 Mid set to: " + Math.Round(slAxis3Mid.Value, 0).ToString();
+            dicConfig["Axis3Mid"] = Math.Round(slAxis3Mid.Value, 0).ToString();
+        }
+
+        private void slAxis4Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis4Mid = Int32.Parse(Math.Round(slAxis4Mid.Value, 0).ToString());
+            txStatus.Text = "Axis 4 Mid set to: " + Math.Round(slAxis4Mid.Value, 0).ToString();
+            dicConfig["Axis4Mid"] = Math.Round(slAxis4Mid.Value, 0).ToString();
+        }
+
+        private void slAxis5Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis5Mid = Int32.Parse(Math.Round(slAxis5Mid.Value, 0).ToString());
+            txStatus.Text = "Axis 5 Mid set to: " + Math.Round(slAxis5Mid.Value, 0).ToString();
+            dicConfig["Axis5Mid"] = Math.Round(slAxis5Mid.Value, 0).ToString();
+        }
+
+        private void slAxis6Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis6Mid = Int32.Parse(Math.Round(slAxis6Mid.Value, 0).ToString());
+            txStatus.Text = "Axis 6 Mid set to: " + Math.Round(slAxis6Mid.Value, 0).ToString();
+            dicConfig["Axis6Mid"] = Math.Round(slAxis6Mid.Value, 0).ToString();
+        }
+
+        private void slAxis1Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis1Max = Int32.Parse(Math.Round(slAxis1Max.Value, 0).ToString());
+            txStatus.Text = "Axis 1 Max set to: " + Math.Round(slAxis1Max.Value, 0).ToString();
+            dicConfig["Axis1Max"] = Math.Round(slAxis1Max.Value, 0).ToString();
+        }
+
+        private void slAxis2Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis2Max = Int32.Parse(Math.Round(slAxis2Max.Value, 0).ToString());
+            txStatus.Text = "Axis 2 Max set to: " + Math.Round(slAxis2Max.Value, 0).ToString();
+            dicConfig["Axis2Max"] = Math.Round(slAxis2Max.Value, 0).ToString();
+        }
+
+        private void slAxis3Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis3Max = Int32.Parse(Math.Round(slAxis3Max.Value, 0).ToString());
+            txStatus.Text = "Axis 3 Max set to: " + Math.Round(slAxis3Max.Value, 0).ToString();
+            dicConfig["Axis3Max"] = Math.Round(slAxis3Max.Value, 0).ToString();
+        }
+
+        private void slAxis4Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis4Max = Int32.Parse(Math.Round(slAxis4Max.Value, 0).ToString());
+            txStatus.Text = "Axis 4 Max set to: " + Math.Round(slAxis4Max.Value, 0).ToString();
+            dicConfig["Axis4Max"] = Math.Round(slAxis4Max.Value, 0).ToString();
+        }
+
+        private void slAxis5Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis5Max = Int32.Parse(Math.Round(slAxis5Max.Value, 0).ToString());
+            txStatus.Text = "Axis 5 Max set to: " + Math.Round(slAxis5Max.Value, 0).ToString();
+            dicConfig["Axis5Max"] = Math.Round(slAxis5Max.Value, 0).ToString();
+        }
+
+        private void slAxis6Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Axis6Max = Int32.Parse(Math.Round(slAxis6Max.Value, 0).ToString());
+            txStatus.Text = "Axis 6 Max set to: " + Math.Round(slAxis6Max.Value, 0).ToString();
+            dicConfig["Axis6Max"] = Math.Round(slAxis6Max.Value, 0).ToString();
+        }
+        #endregion
+
         #region Not Used
 
         private void cbGamepadType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -2050,8 +2256,6 @@ namespace TCPUIClient
             Application.Current.Shutdown();
         }
 
-
-
         private void txPort_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == System.Windows.Input.Key.Return)
@@ -2059,8 +2263,6 @@ namespace TCPUIClient
                 Connect();
             }
         }
-
-
 
         private void cbVideo_Click(object sender, RoutedEventArgs e)
         {
@@ -2084,9 +2286,6 @@ namespace TCPUIClient
                 DisconnectVideo();
             }
         }
-
-
-
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -2132,25 +2331,17 @@ namespace TCPUIClient
             dicConfig["keepaliveenabled"] = cbKeepAlive.IsChecked.Value.ToString();
         }
 
-   
-
         private void cbLogGamepad_Click(object sender, RoutedEventArgs e)
         {
             LogGamepadEnabled = cbLogGamepad.IsChecked.Value;
             dicConfig["loggamepadenabled"] = cbLogGamepad.IsChecked.Value.ToString();
         }
 
-
-
-
-
         private void cbRecieveUDP_Click(object sender, RoutedEventArgs e)
         {
             RecieveUDP = cbRecieveUDP.IsChecked.Value;
             dicConfig["recieveudp"] = cbRecieveUDP.IsChecked.Value.ToString();
         }
-
-
 
         private void btnFindAudio_Click(object sender, RoutedEventArgs e)
         {
@@ -2195,9 +2386,6 @@ namespace TCPUIClient
             AudioDevice = cbAudioSource.SelectedIndex;
         }
 
-
-        
-
         private void cbSendAudioDataOverUDP_Click(object sender, RoutedEventArgs e)
         {
             SendAudioDataOverUDP = cbSendAudioDataOverUDP.IsChecked.Value;
@@ -2205,6 +2393,7 @@ namespace TCPUIClient
         }
 
         #endregion
+
 
     }
 
