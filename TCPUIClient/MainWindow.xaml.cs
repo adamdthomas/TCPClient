@@ -1031,6 +1031,8 @@ namespace TCPUIClient
             string IO = "";
             double ButValDec;
 
+            #region Preliminary Filter: Deadzone and basic conversions
+
             switch (ButLabel)
             {
                 case "Sliders0":
@@ -1115,8 +1117,38 @@ namespace TCPUIClient
                     }
             }
 
-           
-       
+            #endregion 
+
+
+            #region Advanced Filter: Min, Mid, and Max
+
+            //Axis 1: X, Left right(180) left(0)
+            //Axis 2: Y, Left up(0) down(180)
+            //Axis 3: Z or Rotation X, Right right(180) left(0)
+            //Axis 4: Rotation Z or Rotation Y, Left up(0) down(180)
+            //Axis 5: Slider 0, Left out(0) in(180)
+            //Axis 6: Slider 1, Right out(0) in(180)
+
+            switch (ButLabel)
+            {
+                case "Sliders0":
+                case "Sliders1":
+                case "RotationZ":
+                case "RotationY":
+                case "RotationX":
+                case "X":
+                case "Y":
+                case "Z":
+                   break;
+                default:
+                    {
+                        DataToFilter = "";
+                        break;
+                    }
+            }
+
+            #endregion 
+
 
             return DataToFilter;
         }
