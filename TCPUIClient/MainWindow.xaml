@@ -110,12 +110,12 @@
             <TabItem x:Name="Animatronics" Margin="3,0,-3,-1" Header="Advanced">
                 <Grid Margin="0,9,0,-9">
                     <Slider x:Name="slAxis1Min" HorizontalAlignment="Left" Margin="40,22,0,0" VerticalAlignment="Top" Width="78" ValueChanged="slAxis1Min_ValueChanged" Maximum="180" SmallChange="1"/>
-                    <Label Content="Axis 1" HorizontalAlignment="Left" Margin="0,21,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
-                    <Label Content="Axis 2" HorizontalAlignment="Left" Margin="0,44,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
-                    <Label Content="Axis 3" HorizontalAlignment="Left" Margin="0,71,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.525,2.692"/>
-                    <Label Content="Axis 4" HorizontalAlignment="Left" Margin="0,97,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.45,3"/>
-                    <Label Content="Axis 5" HorizontalAlignment="Left" Margin="0,123,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.4,4.462"/>
-                    <Label Content="Axis 6" HorizontalAlignment="Left" Margin="0,149,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
+                    <Label Content="Axis 1" HorizontalAlignment="Left" Margin="0,21,0,0" VerticalAlignment="Top" Foreground="White" Width="40" MouseLeftButtonUp="Label_MouseLeftButtonUp"/>
+                    <Label Content="Axis 2" HorizontalAlignment="Left" Margin="0,44,0,0" VerticalAlignment="Top" Foreground="White" Width="40" MouseLeftButtonUp="Label_MouseLeftButtonUp_1"/>
+                    <Label Content="Axis 3" HorizontalAlignment="Left" Margin="0,71,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.525,2.692" MouseLeftButtonUp="Label_MouseLeftButtonUp_2"/>
+                    <Label Content="Axis 4" HorizontalAlignment="Left" Margin="0,97,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.45,3" MouseLeftButtonUp="Label_MouseLeftButtonUp_3"/>
+                    <Label Content="Axis 5" HorizontalAlignment="Left" Margin="0,123,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="0.4,4.462" MouseLeftButtonUp="Label_MouseLeftButtonUp_4"/>
+                    <Label Content="Axis 6" HorizontalAlignment="Left" Margin="0,149,0,0" VerticalAlignment="Top" Foreground="White" Width="40" MouseLeftButtonUp="Label_MouseLeftButtonUp_5"/>
                     <Label Content="Min" HorizontalAlignment="Left" Margin="54,-4,0,0" VerticalAlignment="Top" Foreground="White" Width="40"/>
                     <Label Content="Mid" HorizontalAlignment="Left" Margin="139,-4,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="3.125,-0.346"/>
                     <Label Content="Max" HorizontalAlignment="Left" Margin="216,-4,0,0" VerticalAlignment="Top" Foreground="White" Width="40" RenderTransformOrigin="6.175,-0.5"/>

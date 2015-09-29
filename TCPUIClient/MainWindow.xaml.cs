@@ -40,13 +40,13 @@ namespace TCPUIClient
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     /// 
-               
 
-   
+
+
     public partial class MainWindow : Window
     {
         #region Variables
-       
+
 
 
         public static Socket MainSocket;
@@ -71,7 +71,7 @@ namespace TCPUIClient
         public delegate void UpdateLevelCallback(double Level);
 
         public static byte[] bytes = new byte[1024];
-        
+
         public static char c1 = (char)10;
 
         public static float sample32;
@@ -84,6 +84,7 @@ namespace TCPUIClient
         public static double myLevel;
         public static double LastLevelSent = 0;
         public static double tempLevel = 0;
+        public static double CenterAdjust = 0;
 
         public static bool SendAudioDataOverUDP = false;
         public static bool CurrentlyConnected = false;
@@ -99,7 +100,7 @@ namespace TCPUIClient
         public static bool Printing;
         public static bool RunCurrent;
 
-        
+
 
         public static int CycleCounter = 0;
         public static int AudioDevice = 0;
@@ -111,7 +112,7 @@ namespace TCPUIClient
         public static string LogPath = @"C:\Logs\";
         public static string VideoBat = @"C:\Logs\vid.bat";
         public static string ConfigPath = @"C:\Logs\config.txt";
-        public static string LogName = ("TCPClientLog-" + DateTime.Now.ToString("D") + ".txt").Replace(@"/",".").Replace(":",".");
+        public static string LogName = ("TCPClientLog-" + DateTime.Now.ToString("D") + ".txt").Replace(@"/", ".").Replace(":", ".");
         public static string LogFullPath = LogPath + LogName;
         public static string cmd;
         public static string VideoMode;
@@ -145,11 +146,11 @@ namespace TCPUIClient
         public static Int32 Axis6Min = 0;
         public static Int32 Axis6Mid = 90;
         public static Int32 Axis6Max = 180;
-        
+
         public static Int64 LastTransmissionTime = 0;
-        
+
         #endregion
-                
+
         public MainWindow()
         {
             InitializeComponent();
@@ -168,15 +169,15 @@ namespace TCPUIClient
                 labels.Add(waveInDevice.ToString() + "-" + deviceInfo.ProductName.ToString() + "... ");
                 if (printResults)
                 {
-                    WriteToLog("Device: " + waveInDevice.ToString() + " " + 
-                        deviceInfo.ProductName.ToString() + "... " + 
+                    WriteToLog("Device: " + waveInDevice.ToString() + " " +
+                        deviceInfo.ProductName.ToString() + "... " +
                             deviceInfo.Channels.ToString() + " channels");
                 }
-                
+
             }
 
             cbAudioSource.ItemsSource = labels;
-            cbAudioSource.Items.Refresh();  
+            cbAudioSource.Items.Refresh();
         }
 
         private void UpdateLevel(double Level)
@@ -200,7 +201,7 @@ namespace TCPUIClient
 
         public void record()
         {
-           
+
             //string[] words = Device.Split('');
             int ADnum = cbAudioSource.SelectedIndex;
             waveIn = new WaveIn();
@@ -218,7 +219,7 @@ namespace TCPUIClient
             {
                 w.ToString();
             }
-            
+
         }
 
         private void waveIn_DataAvailable(object sender, WaveInEventArgs e)
@@ -278,10 +279,10 @@ namespace TCPUIClient
 
         public void SendAudioData(double Level)
         {
-            
+
             if (SendAudioDataOverUDP && GamePadConnected)
             {
-  
+
                 if (Level != LastLevelSent)
                 {
                     tempLevel = Math.Round(Level * 1.8, 0);
@@ -298,9 +299,9 @@ namespace TCPUIClient
                     byte[] msg = Encoding.ASCII.GetBytes(AudioControl);
                     GamePadSocketUDP.SendTo(msg, 0, msg.Length, SocketFlags.None, GameUDPEndPoint);
                     LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
-                    LastLevelSent = tempLevel; 
+                    LastLevelSent = tempLevel;
                 }
-                LastLevelSent = Level; 
+                LastLevelSent = Level;
             }
 
 
@@ -370,7 +371,7 @@ namespace TCPUIClient
                 dicConfig["Axis6Min"] = "0";
                 dicConfig["Axis6Mid"] = "90";
                 dicConfig["Axis6Max"] = "180";
-           
+
                 SetConfigData();
 
             }
@@ -378,7 +379,7 @@ namespace TCPUIClient
 
             //Pull all values from the config file. 
             System.Collections.Generic.IEnumerable<String> lines = File.ReadLines(ConfigPath);
-            
+
 
             foreach (var item in lines)
             {
@@ -389,11 +390,11 @@ namespace TCPUIClient
                 }
                 else
                 {
-                    dicConfig.Add(KeyPair[0], KeyPair[1]);	  
+                    dicConfig.Add(KeyPair[0], KeyPair[1]);
                 }
-           
+
             }
-        
+
         }
 
         public void LoadConfigToUI()
@@ -548,7 +549,7 @@ namespace TCPUIClient
                 GetConfigData();
                 txStatus.Text = "Warning!";
                 WriteToLog("Config file has been rebuilt!");
-                
+
             }
 
         }
@@ -557,9 +558,9 @@ namespace TCPUIClient
         {
             //Delete/erase old file
             File.WriteAllText(ConfigPath, String.Empty);
-       
+
             using (StreamWriter configwriter = File.AppendText(ConfigPath))
-            {             
+            {
                 foreach (var pair in dicConfig)
                 {
                     configwriter.WriteLine(pair.Key + "=" + pair.Value);
@@ -575,7 +576,7 @@ namespace TCPUIClient
                 WriteToLog(pair.Key + "=" + pair.Value);
             }
         }
-      
+
         private void Grid_Initialized(object sender, EventArgs e)
         {
             GetConfigData();
@@ -627,10 +628,10 @@ namespace TCPUIClient
             }
             catch (Exception e)
             {
-                
-          
+
+
             }
-         
+
         }
 
         public string[] GetVideoInfo()
@@ -640,7 +641,7 @@ namespace TCPUIClient
                 data = dicConfig["videoaddress"];
             }
             else
-            { 
+            {
                 cmd = "<VIDEOINFO>"; //vid cmd
                 byte[] msg = Encoding.UTF8.GetBytes(cmd);
                 data = "";
@@ -714,7 +715,7 @@ namespace TCPUIClient
             WebAutomationToolkit.Web.WebDriver = new ChromeDriver(options);
 
 
-            WebAutomationToolkit.Web.NavigateToURL(@"http://" +AddressParts[0] + ":" + AddressParts[1]);
+            WebAutomationToolkit.Web.NavigateToURL(@"http://" + AddressParts[0] + ":" + AddressParts[1]);
             WebAutomationToolkit.Utilities.Wait(2, 500);
             WebAutomationToolkit.Web.Sync.SyncByID("username", 10);
             WebAutomationToolkit.Web.Edit.SetTextByCSSPath("#passwd", dicConfig["foscampassword"]);
@@ -724,7 +725,7 @@ namespace TCPUIClient
             WebAutomationToolkit.Utilities.Wait(5);
             WriteToLog("Webcam viewer has been launched successfully...");
         }
-      
+
         public static void MoveCamera(Direction direction)
         {
             switch (direction)
@@ -840,11 +841,11 @@ namespace TCPUIClient
                     GPThread.Start();
                     Thread.Sleep(1000);
                     WriteToLog(GPID);
-                    
+
                 }
                 else
                 {
-                   
+
                     txStatus.Text = "Gamepad Disconnected!";
                 }
             }
@@ -876,7 +877,7 @@ namespace TCPUIClient
                 string[] AddressParts = data.Split(':');
                 GamePadSocket = ConnectIndependent(AddressParts[0], int.Parse(AddressParts[1]));
                 WriteToLog("Attempting to connect to gamepad server now...");
-                
+
 
                 if (CurrentlyConnected)
                 {
@@ -889,9 +890,9 @@ namespace TCPUIClient
                         Thread.Sleep(1000);
                         if (GamePadConnected)
                         {
-                        WriteToLog(GPID);
-                        WriteToLog("Gamepad connected to: " + data);
-                        txStatus.Text = "Gamepad Connected!";    
+                            WriteToLog(GPID);
+                            WriteToLog("Gamepad connected to: " + data);
+                            txStatus.Text = "Gamepad Connected!";
                         }
                         else
                         {
@@ -900,7 +901,7 @@ namespace TCPUIClient
                             txStatus.Text = "Warning!";
                             GamePadEnabled = false;
                         }
-      
+
                     }
                     else
                     {
@@ -930,71 +931,71 @@ namespace TCPUIClient
             //Ask Server for IP and port
             if (cbGamepadType.Text == "Server Controlled Gamepad UDP")
             {
-                          #region If server controlled
-            try
-            {
-                if (CurrentlyConnected)
+                #region If server controlled
+                try
                 {
-                    if (GamePadEnabled)
-                    {           //<GAMEPADINFO>
-                        cmd = "<GAMEPADINFO>";
-                        byte[] msg = Encoding.UTF8.GetBytes(cmd);
-                        data = "";
-                        int bytesSent = MainSocket.Send(msg);
-                        WriteToLog("Client says: " + cmd);
-                        int bytesRec = MainSocket.Receive(bytes);
-                        data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                        txRawResponse.Text = data;
-                        WriteToLog("Server says: " + data);
-                        string[] AddressParts = data.Split(':');
-                        GamePadSocketUDP = ConnectIndependentUDP(AddressParts[0], int.Parse(AddressParts[1]));
+                    if (CurrentlyConnected)
+                    {
+                        if (GamePadEnabled)
+                        {           //<GAMEPADINFO>
+                            cmd = "<GAMEPADINFO>";
+                            byte[] msg = Encoding.UTF8.GetBytes(cmd);
+                            data = "";
+                            int bytesSent = MainSocket.Send(msg);
+                            WriteToLog("Client says: " + cmd);
+                            int bytesRec = MainSocket.Receive(bytes);
+                            data = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+                            txRawResponse.Text = data;
+                            WriteToLog("Server says: " + data);
+                            string[] AddressParts = data.Split(':');
+                            GamePadSocketUDP = ConnectIndependentUDP(AddressParts[0], int.Parse(AddressParts[1]));
 
-                        //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
-                        Thread GPThread = new Thread(SendGPDataIndependentUDP);
-                        GPThread.Start();
-                        Thread.Sleep(1000);
+                            //Thread GPThread = new Thread(new ThreadStart(MainWindow.SendGPData));
+                            Thread GPThread = new Thread(SendGPDataIndependentUDP);
+                            GPThread.Start();
+                            Thread.Sleep(1000);
 
-                        if (GamePadConnected)
-                        {
-                            WriteToLog(GPID);
-                            WriteToLog("Gamepad connected to: " + data);
-                            txStatus.Text = "Gamepad Connected!";
+                            if (GamePadConnected)
+                            {
+                                WriteToLog(GPID);
+                                WriteToLog("Gamepad connected to: " + data);
+                                txStatus.Text = "Gamepad Connected!";
+                            }
+                            else
+                            {
+                                cbGameEnabled.IsChecked = false;
+                                WriteToLog("Please connect a gamepad!");
+                                txStatus.Text = "Warning!";
+                                GamePadEnabled = false;
+
+                            }
+
                         }
                         else
                         {
-                            cbGameEnabled.IsChecked = false;
-                            WriteToLog("Please connect a gamepad!");
-                            txStatus.Text = "Warning!";
-                            GamePadEnabled = false;
-                            
-                        }
 
+                            txStatus.Text = "Gamepad Disconnected!";
+                        }
                     }
                     else
                     {
-
-                        txStatus.Text = "Gamepad Disconnected!";
+                        cbGameEnabled.IsChecked = false;
+                        WriteToLog("Please connect to the server before connecting a gamepad or slect client controlled gamepad.");
+                        txStatus.Text = "Warning!";
                     }
                 }
-                else
+                catch (Exception ec)
                 {
-                    cbGameEnabled.IsChecked = false;
-                    WriteToLog("Please connect to the server before connecting a gamepad or slect client controlled gamepad.");
-                    txStatus.Text = "Warning!";
-                }
-            }
-            catch (Exception ec)
-            {
 
-                WriteToLog("Gamepad thread failed to connect.");
-                txStatus.Text = ec.ToString();
-            }
-            #endregion
+                    WriteToLog("Gamepad thread failed to connect.");
+                    txStatus.Text = ec.ToString();
+                }
+                #endregion
             }
             else if (cbGamepadType.Text == "Client Controlled Gamepad UDP")
             {
                 WriteToLog("Attempting to stream gamepad data to " + dicConfig["gamepadaddress"] + " via UDP.");
-                string[] AddressParts = dicConfig["gamepadaddress"] .Split(':');
+                string[] AddressParts = dicConfig["gamepadaddress"].Split(':');
                 GamePadSocketUDP = ConnectIndependentUDP(AddressParts[0], int.Parse(AddressParts[1]));
 
                 Thread GPThread = new Thread(new ThreadStart(SendGPDataIndependentUDP));
@@ -1017,10 +1018,10 @@ namespace TCPUIClient
 
 
             }
-  
+
         }
 
-        public  string GamePadDataFilter(string DataToFilter)
+        public string GamePadDataFilter(string DataToFilter)
         {
             bool CenterStick = false;
             string s = DataToFilter;
@@ -1052,11 +1053,11 @@ namespace TCPUIClient
                     {
                         ButValDec = ButVal / 361.11;
                         ButValDec = Math.Round(ButValDec, 0);
-                        if(CenterStick)
+                        if (CenterStick)
                         {
                             ButValDec = 90;
                         }
-                        if(ButValDec > 180)
+                        if (ButValDec > 180)
                         {
                             ButValDec = 180;
                         }
@@ -1064,14 +1065,120 @@ namespace TCPUIClient
                         {
                             ButValDec = 0;
                         }
-                        DataToFilter = ButLabel + ":" + ButValDec.ToString() + "~"; 
+
+                        #region Advanced Filter: Min, Mid, and Max
+
+                        //Axis 1: X, Left right(180) left(0)
+                        //Axis 2: Y, Left up(0) down(180)
+                        //Axis 3: Z or Rotation X, Right right(180) left(0)
+                        //Axis 4: Rotation Z or Rotation Y, Left up(0) down(180)
+                        //Axis 5: Slider 0, Left out(0) in(180)
+                        //Axis 6: Slider 1, Right out(0) in(180)
+                       
+                        switch (ButLabel)
+                        {
+
+                            case "X":
+                                CenterAdjust = slAxis1Mid.Value - 90;
+                                ButValDec = ButValDec + CenterAdjust;
+
+                                if (ButValDec < slAxis1Min.Value)
+                                {
+                                    ButValDec = slAxis1Min.Value;
+                                }
+
+                                if (ButValDec > slAxis1Max.Value)
+                                {
+                                    ButValDec = slAxis1Max.Value;
+                                }
+
+                                break;
+                            case "Y":
+                                CenterAdjust = slAxis2Mid.Value - 90;
+                                ButValDec = ButValDec + CenterAdjust;
+
+                                if (ButValDec < slAxis2Min.Value)
+                                {
+                                    ButValDec = slAxis2Min.Value;
+                                }
+
+                                if (ButValDec > slAxis2Max.Value)
+                                {
+                                    ButValDec = slAxis2Max.Value;
+                                }
+                                break;
+                            case "Z":
+                            case "RotationX":
+                                CenterAdjust = slAxis3Mid.Value - 90;
+                                ButValDec = ButValDec + CenterAdjust;
+
+                                if (ButValDec < slAxis3Min.Value)
+                                {
+                                    ButValDec = slAxis3Min.Value;
+                                }
+
+                                if (ButValDec > slAxis3Max.Value)
+                                {
+                                    ButValDec = slAxis3Max.Value;
+                                }
+                                break;
+                            case "RotationZ":
+                            case "RotationY":
+                                CenterAdjust = slAxis4Mid.Value - 90;
+                                ButValDec = ButValDec + CenterAdjust;
+
+                                if (ButValDec < slAxis4Min.Value)
+                                {
+                                    ButValDec = slAxis4Min.Value;
+                                }
+
+                                if (ButValDec > slAxis4Max.Value)
+                                {
+                                    ButValDec = slAxis4Max.Value;
+                                }
+                                break;
+                            case "Sliders0":
+                                CenterAdjust = slAxis5Mid.Value - 90;
+                                ButValDec = ButValDec + CenterAdjust;
+
+                                if (ButValDec < slAxis5Min.Value)
+                                {
+                                    ButValDec = slAxis5Min.Value;
+                                }
+
+                                if (ButValDec > slAxis5Max.Value)
+                                {
+                                    ButValDec = slAxis5Max.Value;
+                                }
+                                break;
+                            case "Sliders1":
+                                CenterAdjust = slAxis6Mid.Value - 90;
+                                ButValDec = ButValDec + CenterAdjust;
+
+                                if (ButValDec < slAxis6Min.Value)
+                                {
+                                    ButValDec = slAxis6Min.Value;
+                                }
+
+                                if (ButValDec > slAxis6Max.Value)
+                                {
+                                    ButValDec = slAxis6Max.Value;
+                                }
+                                break;
+
+
+                        }
+
+                        #endregion
+
+                        DataToFilter = ButLabel + ":" + ButValDec.ToString() + "~";
                     }
                     else
                     {
                         DataToFilter = s;
                     }
-                        
-                    
+
+
                     break;
                 case "Buttons0":
                 case "Buttons1":
@@ -1092,8 +1199,8 @@ namespace TCPUIClient
                     {
                         if (TranslateGPD)
                         {
-                            
-                       
+
+
                             if (ButVal == 0)
                             {
                                 IO = "OFF";
@@ -1117,90 +1224,63 @@ namespace TCPUIClient
                     }
             }
 
-            #endregion 
+            #endregion
 
 
-            #region Advanced Filter: Min, Mid, and Max
-
-            //Axis 1: X, Left right(180) left(0)
-            //Axis 2: Y, Left up(0) down(180)
-            //Axis 3: Z or Rotation X, Right right(180) left(0)
-            //Axis 4: Rotation Z or Rotation Y, Left up(0) down(180)
-            //Axis 5: Slider 0, Left out(0) in(180)
-            //Axis 6: Slider 1, Right out(0) in(180)
-
-            switch (ButLabel)
-            {
-                case "Sliders0":
-                case "Sliders1":
-                case "RotationZ":
-                case "RotationY":
-                case "RotationX":
-                case "X":
-                case "Y":
-                case "Z":
-                   break;
-                default:
-                    {
-                        DataToFilter = "";
-                        break;
-                    }
-            }
-
-            #endregion 
+     
 
 
             return DataToFilter;
         }
 
-        public  void SendGPData()
+        public void SendGPData()
         {
-     
+
             if (CurrentlyConnected && GamePadEnabled)
             {
                 try
                 {
-                using (StreamWriter sw = File.AppendText(LogFullPath))
-                {
-                    string GPD = "";
-                    var MyJS = FindGamepad();
-                    while (GamePadEnabled)
+                    using (StreamWriter sw = File.AppendText(LogFullPath))
                     {
-                        MyJS.Poll();
-                        var datas = MyJS.GetBufferedData();
-                        foreach (var state in datas)
+                        string GPD = "";
+                        var MyJS = FindGamepad();
+                        while (GamePadEnabled)
                         {
-                            GPD = GamePadDataFilter(state.ToString());
-                            if (GPD != "")
+                            MyJS.Poll();
+                            var datas = MyJS.GetBufferedData();
+                            foreach (var state in datas)
                             {
-                                if (EnableLogFile)
+                                GPD = GamePadDataFilter(state.ToString());
+                                if (GPD != "")
                                 {
-
-                                    if (LogGamepadEnabled)
+                                    if (EnableLogFile)
                                     {
-                                        LogFromThread(GPD);
 
-                                        sw.WriteLine(GPD);
+                                        if (LogGamepadEnabled)
+                                        {
+                                            LogFromThread(GPD);
+
+                                            sw.WriteLine(GPD);
+                                        }
                                     }
+
+                                    byte[] GPMsg = Encoding.ASCII.GetBytes(GPD);
+                                    Thread.Sleep(int.Parse(txRate.ToString()));
+                                    int bytesSent = MainSocket.Send(GPMsg);
                                 }
-                                
-                                byte[] GPMsg = Encoding.ASCII.GetBytes(GPD);
-                                Thread.Sleep(int.Parse(txRate.ToString()));
-                                int bytesSent = MainSocket.Send(GPMsg);
                             }
                         }
+                        sw.Close();
                     }
-                    sw.Close();
-                }
                 }
                 catch (Exception sgp)
                 {
                     sgp.ToString();
                 }
-            } 
+            }
         }
 
-        public  void SendGPDataIndependent()
+        public void SendGPDataIndependent()
         {
 
             if (CurrentlyConnected && GamePadEnabled)
@@ -1243,7 +1323,7 @@ namespace TCPUIClient
                         GamePadSocket.Shutdown(SocketShutdown.Both);
                         GamePadSocket.Close();
                         GamePadSocket = null;
-             
+
                     }
                 }
                 catch (Exception sgp)
@@ -1254,7 +1334,7 @@ namespace TCPUIClient
             }
         }
 
-        public  void SendGPDataIndependentUDP()
+        public void SendGPDataIndependentUDP()
         {
 
             if (CurrentlyConnected && GamePadEnabled)
@@ -1296,26 +1376,26 @@ namespace TCPUIClient
                                     {
 
                                         LogFromThread("KA:" + CurrentTime.ToString());
-                                 
+
                                     }
                                 }
                             }
-                                
+
 
                             foreach (var state in datas)
                             {
 
                                 //add a message from the client if requested via the UDPMessage= command
                                 GPD = GamePadDataFilter(state.ToString());
-                          
+
                                 if (GPD != "")
                                 {
 
 
-                                    
+
                                     //This splits off the d pad for use with the foscam video feed
-                                    if (VideoControlOn && VideoEnabled && GamePadEnabled && CurrentlyConnected && VideoMode.IndexOf("Foscam") >=0  )
-                                    { 
+                                    if (VideoControlOn && VideoEnabled && GamePadEnabled && CurrentlyConnected && VideoMode.IndexOf("Foscam") >= 0)
+                                    {
                                         if (GPD.IndexOf("Buttons12:ON") >= 0 || GPD.IndexOf("Buttons13:ON") >= 0 || GPD.IndexOf("Buttons14:ON") >= 0 || GPD.IndexOf("Buttons15:ON") >= 0)
                                         {
                                             ControlFCam(GPD);
@@ -1337,19 +1417,19 @@ namespace TCPUIClient
                                         LastTransmissionTime = GetEPOCHTimeInMilliSeconds();
                                     }
                                     LastGPMessage = GPD;
-                         
+
                                     if (RecieveUDP)
                                     {
-     
-                                    }
-    
 
-                                    
+                                    }
+
+
+
                                 }
                             }
                         }
 
-              
+
                         sw4.Close();
                         GamePadSocketUDP.Shutdown(SocketShutdown.Both);
                         GamePadSocketUDP.Close();
@@ -1363,9 +1443,9 @@ namespace TCPUIClient
                 }
             }
         }
-        
+
         public static Joystick FindGamepad()
-      {
+        {
             // Initialize DirectInput
             var directInput = new DirectInput();
 
@@ -1408,14 +1488,14 @@ namespace TCPUIClient
             joystick.Acquire();
 
             // Poll events from joystick
-          //  while (true)
-           // {
+            //  while (true)
+            // {
             //    joystick.Poll();
             //    var datas = joystick.GetBufferedData();
-              //  foreach (var state in datas)
-                //    Console.WriteLine(state);
+            //  foreach (var state in datas)
+            //    Console.WriteLine(state);
             //}
-         
+
             return joystick;
         }
 
@@ -1435,7 +1515,7 @@ namespace TCPUIClient
                     txRawResponse.Text = data;
                     WriteToLog("Server says: " + data);
                     txStatus.Text = "Gamepad discconected successfully!";
- 
+
                 }
                 catch (Exception ec)
                 {
@@ -1448,10 +1528,10 @@ namespace TCPUIClient
             cbGameEnabled.IsChecked = false;
             WriteToLog("Gamepad disconnected.");
             GamePadEnabled = false;
-   
+
         }
 
-        #endregion 
+        #endregion
 
         #region TCPSocketFunctions
 
@@ -1490,7 +1570,7 @@ namespace TCPUIClient
                 {
                     txStatus.Text = ex.ToString();
                     WriteToLog("Could not connect to " + txServername.Text + ":" + txPort.Text);
-                    
+
                 }
             }
         }
@@ -1498,30 +1578,30 @@ namespace TCPUIClient
         public static Socket ConnectIndependent(string IP, int Port)
         {
 
-                DeadZone = Int32.Parse(dicConfig["deadzone"]);
-                try
-                {
-                    IPHostEntry ipHostInfo = Dns.Resolve(IP);
-                    IPAddress ipAddress = ipHostInfo.AddressList[0];
-                    IPEndPoint remoteEPs = new IPEndPoint(ipAddress, Port);
-                    Socket privateSocket = new Socket(AddressFamily.InterNetwork,
-                    SocketType.Stream, ProtocolType.Tcp);
+            DeadZone = Int32.Parse(dicConfig["deadzone"]);
+            try
+            {
+                IPHostEntry ipHostInfo = Dns.Resolve(IP);
+                IPAddress ipAddress = ipHostInfo.AddressList[0];
+                IPEndPoint remoteEPs = new IPEndPoint(ipAddress, Port);
+                Socket privateSocket = new Socket(AddressFamily.InterNetwork,
+                SocketType.Stream, ProtocolType.Tcp);
 
-                    // Connect the socket to the remote endpoint. Catch any errors.
-                    privateSocket.SendTimeout = 5000;
-                    privateSocket.ReceiveTimeout = 5000;
-                    privateSocket.Connect(remoteEPs);
-                   
-                    CurrentlyConnected = true;
-                    return privateSocket;
-    
-                }
-                catch (Exception ex)
-                {
-                    string exc = ex.ToString();
-                    return null;
+                // Connect the socket to the remote endpoint. Catch any errors.
+                privateSocket.SendTimeout = 5000;
+                privateSocket.ReceiveTimeout = 5000;
+                privateSocket.Connect(remoteEPs);
 
-                }
+                CurrentlyConnected = true;
+                return privateSocket;
+
+            }
+            catch (Exception ex)
+            {
+                string exc = ex.ToString();
+                return null;
+
+            }
 
 
         }
@@ -1529,36 +1609,36 @@ namespace TCPUIClient
         public static Socket ConnectIndependentUDP(string IP, int Port)
         {
 
-                DeadZone = Int32.Parse(dicConfig["deadzone"]);
-                try
-                {
+            DeadZone = Int32.Parse(dicConfig["deadzone"]);
+            try
+            {
 
 
-                    IPHostEntry hostEntry = Dns.Resolve(IP);
+                IPHostEntry hostEntry = Dns.Resolve(IP);
 
-                    GameUDPEndPoint = new IPEndPoint(hostEntry.AddressList[0], Port);
+                GameUDPEndPoint = new IPEndPoint(hostEntry.AddressList[0], Port);
 
-                    Socket privateSocket = new Socket(GameUDPEndPoint.Address.AddressFamily,
-                        SocketType.Dgram,
-                        ProtocolType.Udp);
+                Socket privateSocket = new Socket(GameUDPEndPoint.Address.AddressFamily,
+                    SocketType.Dgram,
+                    ProtocolType.Udp);
 
-                    // Connect the socket to the remote endpoint. Catch any errors.
+                // Connect the socket to the remote endpoint. Catch any errors.
 
-                    privateSocket.SendTimeout = 5000;
-                    privateSocket.ReceiveTimeout = 5000;
-                    privateSocket.Connect(GameUDPEndPoint);
-                   
-                    CurrentlyConnected = true;
-                    return privateSocket;
-                }
-                catch (Exception ex)
-                {
-                    string exc = ex.ToString();
-                    return null;
+                privateSocket.SendTimeout = 5000;
+                privateSocket.ReceiveTimeout = 5000;
+                privateSocket.Connect(GameUDPEndPoint);
 
-                }
+                CurrentlyConnected = true;
+                return privateSocket;
+            }
+            catch (Exception ex)
+            {
+                string exc = ex.ToString();
+                return null;
 
-                
+            }
+
+
         }
 
         public void Disconnect()
@@ -1738,15 +1818,15 @@ namespace TCPUIClient
             txMain.ScrollToEnd();
         }
 
-       private void ThreadStatus(string Message)
-       {
-           txStatus.Text = Message;
-       }
+        private void ThreadStatus(string Message)
+        {
+            txStatus.Text = Message;
+        }
 
-       private void ThreadRecieved(string Message)
-       {
-           txRawResponse.Text = Message;
-       }
+        private void ThreadRecieved(string Message)
+        {
+            txRawResponse.Text = Message;
+        }
 
         public void RunCMD(string CMD)
         {
@@ -1769,7 +1849,7 @@ namespace TCPUIClient
                 txStatus.Text = ex.ToString();
                 WriteToLog("Oh no Mr. Bill! ...Couldnt kill the process named: " + ProcessName);
             }
-         
+
         }
 
         public void ShowGamePadAdvancedControls(bool ShouldTheyBeShown)
@@ -1786,11 +1866,11 @@ namespace TCPUIClient
             WriteToLog(@"TXRATE=# <---Sets the TX rate to a precise number. Number must not be a decimal.");
             WriteToLog(@"GAMEPADADDRESS=???.???.???.???:???? <---The address and port of the UDP server that the gamepad data will be sent to.");
             WriteToLog(@"VIDEOADDRESS=???.???.???.???:???? <---The address and port of the Foscam video server that will be launched via web automation");
-            WriteToLog(@"CONFIG <---Prints the config data"); 
-            WriteToLog(@"HELP <---Prints the help text"); 
+            WriteToLog(@"CONFIG <---Prints the config data");
+            WriteToLog(@"HELP <---Prints the help text");
 
             WriteToLog(L);
-            
+
             WriteToLog(@"###SERVER COMMANDS###");
             WriteToLog(@"<GAMEPADINFO>  <---Tells server to open up UDP/TCP connection (If selected) to accept controller commands.");
             WriteToLog(@"Server returns: ip address and port in the following format - 192.168.1.100:4000");
@@ -1854,7 +1934,7 @@ namespace TCPUIClient
             }
         }
 
-        public void  ClientCommandHandler(string command)
+        public void ClientCommandHandler(string command)
         {
             if (command.ToUpper().IndexOf("GAMEPADADDRESS=") > -1)
             {
@@ -1876,7 +1956,7 @@ namespace TCPUIClient
             {
                 string[] gpParts = command.Split('=');
                 UDPMessage = gpParts[1];
-                WriteToLog("UDP massage: "  + gpParts[1] + " will be sent... ");
+                WriteToLog("UDP massage: " + gpParts[1] + " will be sent... ");
                 txMessage.Text = "";
             }
 
@@ -1953,6 +2033,51 @@ namespace TCPUIClient
 
         #region Trim/advanced
 
+        #region Reset Advance
+
+        private void Label_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            slAxis1Max.Value = 180;
+            slAxis1Mid.Value = 90;
+            slAxis1Min.Value = 0;
+        }
+
+        private void Label_MouseLeftButtonUp_1(object sender, MouseButtonEventArgs e)
+        {
+            slAxis2Max.Value = 180;
+            slAxis2Mid.Value = 90;
+            slAxis2Min.Value = 0;
+        }
+
+        private void Label_MouseLeftButtonUp_2(object sender, MouseButtonEventArgs e)
+        {
+            slAxis3Max.Value = 180;
+            slAxis3Mid.Value = 90;
+            slAxis3Min.Value = 0;
+        }
+
+        private void Label_MouseLeftButtonUp_3(object sender, MouseButtonEventArgs e)
+        {
+            slAxis4Max.Value = 180;
+            slAxis4Mid.Value = 90;
+            slAxis4Min.Value = 0;
+        }
+
+        private void Label_MouseLeftButtonUp_4(object sender, MouseButtonEventArgs e)
+        {
+            slAxis5Max.Value = 180;
+            slAxis5Mid.Value = 90;
+            slAxis5Min.Value = 0;
+        }
+
+        private void Label_MouseLeftButtonUp_5(object sender, MouseButtonEventArgs e)
+        {
+            slAxis6Max.Value = 180;
+            slAxis6Mid.Value = 90;
+            slAxis6Min.Value = 0;
+        }
+
+        #endregion
 
         private void slAxis1Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -1987,6 +2112,7 @@ namespace TCPUIClient
             Axis5Min = Int32.Parse(Math.Round(slAxis5Min.Value, 0).ToString());
             txStatus.Text = "Axis 5 Min set to: " + Math.Round(slAxis5Min.Value, 0).ToString();
             dicConfig["Axis5Min"] = Math.Round(slAxis5Min.Value, 0).ToString();
+
         }
 
         private void slAxis6Min_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2001,6 +2127,16 @@ namespace TCPUIClient
             Axis1Mid = Int32.Parse(Math.Round(slAxis1Mid.Value, 0).ToString());
             txStatus.Text = "Axis 1 Mid set to: " + Math.Round(slAxis1Mid.Value, 0).ToString();
             dicConfig["Axis1Mid"] = Math.Round(slAxis1Mid.Value, 0).ToString();
+
+            try
+            {
+                slAxis1Min.Maximum = slAxis1Mid.Value - 1;
+                slAxis1Max.Minimum = slAxis1Mid.Value + 1;
+            }
+            catch (Exception e1)
+            {
+            }
+
         }
 
         private void slAxis2Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2008,6 +2144,15 @@ namespace TCPUIClient
             Axis2Mid = Int32.Parse(Math.Round(slAxis2Mid.Value, 0).ToString());
             txStatus.Text = "Axis 2 Mid set to: " + Math.Round(slAxis2Mid.Value, 0).ToString();
             dicConfig["Axis2Mid"] = Math.Round(slAxis2Mid.Value, 0).ToString();
+
+            try
+            {
+                slAxis2Min.Maximum = slAxis2Mid.Value - 1;
+                slAxis2Max.Minimum = slAxis2Mid.Value + 1;
+            }
+            catch (Exception e1)
+            {
+            }
         }
 
         private void slAxis3Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2015,6 +2160,14 @@ namespace TCPUIClient
             Axis3Mid = Int32.Parse(Math.Round(slAxis3Mid.Value, 0).ToString());
             txStatus.Text = "Axis 3 Mid set to: " + Math.Round(slAxis3Mid.Value, 0).ToString();
             dicConfig["Axis3Mid"] = Math.Round(slAxis3Mid.Value, 0).ToString();
+            try
+            {
+                slAxis3Min.Maximum = slAxis3Mid.Value - 1;
+                slAxis3Max.Minimum = slAxis3Mid.Value + 1;
+            }
+            catch (Exception e1)
+            {
+            }
         }
 
         private void slAxis4Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2022,6 +2175,14 @@ namespace TCPUIClient
             Axis4Mid = Int32.Parse(Math.Round(slAxis4Mid.Value, 0).ToString());
             txStatus.Text = "Axis 4 Mid set to: " + Math.Round(slAxis4Mid.Value, 0).ToString();
             dicConfig["Axis4Mid"] = Math.Round(slAxis4Mid.Value, 0).ToString();
+            try
+            {
+                slAxis4Min.Maximum = slAxis4Mid.Value - 1;
+                slAxis4Max.Minimum = slAxis4Mid.Value + 1;
+            }
+            catch (Exception e1)
+            {
+            }
         }
 
         private void slAxis5Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2029,6 +2190,14 @@ namespace TCPUIClient
             Axis5Mid = Int32.Parse(Math.Round(slAxis5Mid.Value, 0).ToString());
             txStatus.Text = "Axis 5 Mid set to: " + Math.Round(slAxis5Mid.Value, 0).ToString();
             dicConfig["Axis5Mid"] = Math.Round(slAxis5Mid.Value, 0).ToString();
+            try
+            {
+                slAxis5Min.Maximum = slAxis5Mid.Value - 1;
+                slAxis5Max.Minimum = slAxis5Mid.Value + 1;
+            }
+            catch (Exception e1)
+            {
+            }
         }
 
         private void slAxis6Mid_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2036,6 +2205,14 @@ namespace TCPUIClient
             Axis6Mid = Int32.Parse(Math.Round(slAxis6Mid.Value, 0).ToString());
             txStatus.Text = "Axis 6 Mid set to: " + Math.Round(slAxis6Mid.Value, 0).ToString();
             dicConfig["Axis6Mid"] = Math.Round(slAxis6Mid.Value, 0).ToString();
+            try
+            {
+                slAxis6Min.Maximum = slAxis6Mid.Value - 1;
+                slAxis6Max.Minimum = slAxis6Mid.Value + 1;
+            }
+            catch (Exception e1)
+            {
+            }
         }
 
         private void slAxis1Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2140,26 +2317,27 @@ namespace TCPUIClient
 
         #endregion
 
+        #region Basic
+
         public void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-  
+
             Connect();
         }
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
-    
+
             Disconnect();
         }
 
         private void txMessage_KeyDown(object sender, KeyEventArgs e)
-        
         {
             if (e.Key == System.Windows.Input.Key.Return && txMessage.Text != "")
             {
                 SendMessage();
 
-             }
+            }
         }
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
@@ -2194,7 +2372,7 @@ namespace TCPUIClient
                 DisconnectGamePad();
             }
 
-    
+
         }
 
         private void cbTranslate_Click(object sender, RoutedEventArgs e)
@@ -2205,7 +2383,7 @@ namespace TCPUIClient
 
         private void cbEnableLogFile_Click(object sender, RoutedEventArgs e)
         {
-            
+
             EnableLogFile = cbEnableLogFile.IsChecked.Value;
             dicConfig["writetolog"] = EnableLogFile.ToString();
             if (EnableLogFile)
@@ -2221,7 +2399,7 @@ namespace TCPUIClient
                     }
                 }
 
-             
+
                 WriteToLog("Logging to file: " + LogFullPath);
             }
         }
@@ -2238,7 +2416,7 @@ namespace TCPUIClient
         {
             txMain.Text = "";
             txStatus.Text = "";
-    
+
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2262,7 +2440,7 @@ namespace TCPUIClient
             Center = Int32.Parse(Math.Round(slCenter.Value, 0).ToString());
             txStatus.Text = "Analog center set to: " + Math.Round(slCenter.Value, 0).ToString();
             dicConfig["center"] = Math.Round(slCenter.Value, 0).ToString();
-            
+
         }
 
         private void txServername_LostFocus(object sender, RoutedEventArgs e)
@@ -2342,14 +2520,14 @@ namespace TCPUIClient
 
         private void cbVideoType_DropDownClosed(object sender, EventArgs e)
         {
-            if(cbVideoType.Text == "Client Controlled Foscam")
+            if (cbVideoType.Text == "Client Controlled Foscam")
             {
                 WriteToLog("Current assigned Foscam address is: " + dicConfig["videoaddress"] + L + "To change this use command: VIDEOADDRESS=Whateveraddressyouwant.com:88");
             }
             dicConfig["videomode"] = cbVideoType.SelectedIndex.ToString();
             VideoMode = cbVideoType.Text;
         }
-        
+
         private void slKeepAliveRate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             KARate = Int32.Parse(Math.Round(slKeepAliveRate.Value, 0).ToString());
@@ -2426,75 +2604,16 @@ namespace TCPUIClient
 
         #endregion
 
+  
+
+        #endregion
+
+
 
     }
 
-      
-    }
-
-
-
-        public static class StringCipher
-        {
-            // This constant string is used as a "salt" value for the PasswordDeriveBytes function calls.
-            // This size of the IV (in bytes) must = (keysize / 8).  Default keysize is 256, so the IV must be
-            // 32 bytes long.  Using a 16 character string here gives us 32 bytes when converted to a byte array.
-            private static readonly byte[] initVectorBytes = Encoding.ASCII.GetBytes("jfhur9482kdlkj45");
-
-            // This constant is used to determine the keysize of the encryption algorithm.
-            private const int keysize = 256;
-
-            public static string Encrypt(string plainText, string passPhrase)
-            {
-                byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-                using (PasswordDeriveBytes password = new PasswordDeriveBytes(passPhrase, null))
-                {
-                    byte[] keyBytes = password.GetBytes(keysize / 8);
-                    using (RijndaelManaged symmetricKey = new RijndaelManaged())
-                    {
-                        symmetricKey.Mode = CipherMode.CBC;
-                        using (ICryptoTransform encryptor = symmetricKey.CreateEncryptor(keyBytes, initVectorBytes))
-                        {
-                            using (MemoryStream memoryStream = new MemoryStream())
-                            {
-                                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                                {
-                                    cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
-                                    cryptoStream.FlushFinalBlock();
-                                    byte[] cipherTextBytes = memoryStream.ToArray();
-                                    return Convert.ToBase64String(cipherTextBytes);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            public static string Decrypt(string cipherText, string passPhrase)
-            {
-                byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
-                using (PasswordDeriveBytes password = new PasswordDeriveBytes(passPhrase, null))
-                {
-                    byte[] keyBytes = password.GetBytes(keysize / 8);
-                    using (RijndaelManaged symmetricKey = new RijndaelManaged())
-                    {
-                        symmetricKey.Mode = CipherMode.CBC;
-                        using (ICryptoTransform decryptor = symmetricKey.CreateDecryptor(keyBytes, initVectorBytes))
-                        {
-                            using (MemoryStream memoryStream = new MemoryStream(cipherTextBytes))
-                            {
-                                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-                                {
-                                    byte[] plainTextBytes = new byte[cipherTextBytes.Length];
-                                    int decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
-                                    return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+}
+    
 
 
 
