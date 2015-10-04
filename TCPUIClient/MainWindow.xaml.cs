@@ -1079,90 +1079,90 @@ namespace TCPUIClient
                         {
 
                             case "X":
-                                CenterAdjust = slAxis1Mid.Value - 90;
+                                CenterAdjust = Axis1Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
-                                if (ButValDec < slAxis1Min.Value)
+                                if (ButValDec < Axis1Min)
                                 {
-                                    ButValDec = slAxis1Min.Value;
+                                    ButValDec = Axis1Min;
                                 }
 
-                                if (ButValDec > slAxis1Max.Value)
+                                if (ButValDec > Axis1Max)
                                 {
-                                    ButValDec = slAxis1Max.Value;
+                                    ButValDec = Axis1Max;
                                 }
 
                                 break;
                             case "Y":
-                                CenterAdjust = slAxis2Mid.Value - 90;
+                                CenterAdjust = Axis2Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
-                                if (ButValDec < slAxis2Min.Value)
+                                if (ButValDec < Axis2Min)
                                 {
-                                    ButValDec = slAxis2Min.Value;
+                                    ButValDec = Axis2Min;
                                 }
 
-                                if (ButValDec > slAxis2Max.Value)
+                                if (ButValDec > Axis2Max)
                                 {
-                                    ButValDec = slAxis2Max.Value;
+                                    ButValDec = Axis2Max;
                                 }
                                 break;
                             case "Z":
                             case "RotationX":
-                                CenterAdjust = slAxis3Mid.Value - 90;
+                                CenterAdjust = Axis3Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
-                                if (ButValDec < slAxis3Min.Value)
+                                if (ButValDec < Axis3Min)
                                 {
-                                    ButValDec = slAxis3Min.Value;
+                                    ButValDec = Axis3Min;
                                 }
 
-                                if (ButValDec > slAxis3Max.Value)
+                                if (ButValDec > Axis3Max)
                                 {
-                                    ButValDec = slAxis3Max.Value;
+                                    ButValDec = Axis3Max;
                                 }
                                 break;
                             case "RotationZ":
                             case "RotationY":
-                                CenterAdjust = slAxis4Mid.Value - 90;
+                                CenterAdjust = Axis4Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
-                                if (ButValDec < slAxis4Min.Value)
+                                if (ButValDec < Axis4Min)
                                 {
-                                    ButValDec = slAxis4Min.Value;
+                                    ButValDec = Axis4Min;
                                 }
 
-                                if (ButValDec > slAxis4Max.Value)
+                                if (ButValDec > Axis4Max)
                                 {
-                                    ButValDec = slAxis4Max.Value;
+                                    ButValDec = Axis4Max;
                                 }
                                 break;
                             case "Sliders0":
-                                CenterAdjust = slAxis5Mid.Value - 90;
+                                CenterAdjust = Axis5Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
-                                if (ButValDec < slAxis5Min.Value)
+                                if (ButValDec < Axis5Min)
                                 {
-                                    ButValDec = slAxis5Min.Value;
+                                    ButValDec = Axis5Min;
                                 }
 
-                                if (ButValDec > slAxis5Max.Value)
+                                if (ButValDec > Axis5Max)
                                 {
-                                    ButValDec = slAxis5Max.Value;
+                                    ButValDec = Axis5Max;
                                 }
                                 break;
                             case "Sliders1":
-                                CenterAdjust = slAxis6Mid.Value - 90;
+                                CenterAdjust = Axis6Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
-                                if (ButValDec < slAxis6Min.Value)
+                                if (ButValDec < Axis6Min)
                                 {
-                                    ButValDec = slAxis6Min.Value;
+                                    ButValDec = Axis6Min;
                                 }
 
-                                if (ButValDec > slAxis6Max.Value)
+                                if (ButValDec > Axis6Max)
                                 {
-                                    ButValDec = slAxis6Max.Value;
+                                    ButValDec = Axis6Max;
                                 }
                                 break;
 
