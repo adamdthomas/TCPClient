@@ -99,6 +99,12 @@ namespace TCPUIClient
         public static bool RecieveUDP = false;
         public static bool Printing;
         public static bool RunCurrent;
+        public static bool Axis1Inv;
+        public static bool Axis2Inv;
+        public static bool Axis3Inv;
+        public static bool Axis4Inv;
+        public static bool Axis5Inv;
+        public static bool Axis6Inv;
 
 
 
@@ -332,7 +338,7 @@ namespace TCPUIClient
                 dicConfig["txrate"] = "0";
                 dicConfig["center"] = "30750";
                 dicConfig["gamepadmode"] = "0";
-                dicConfig["gamepadaddress"] = "www.thomasworkshop.com:8888";
+                dicConfig["gamepadaddress"] = "192.168.1.148:8888";
                 dicConfig["videomode"] = "0";
                 dicConfig["foscampassword"] = "0";
                 dicConfig["videocontrol"] = "true";
@@ -347,6 +353,12 @@ namespace TCPUIClient
                 dicConfig["filter"] = "0";
                 dicConfig["audiodevice"] = "0";
 
+                dicConfig["Axis1Inv"] = "false";
+                dicConfig["Axis2Inv"] = "false";
+                dicConfig["Axis3Inv"] = "false";
+                dicConfig["Axis4Inv"] = "false";
+                dicConfig["Axis5Inv"] = "false";
+                dicConfig["Axis6Inv"] = "false";
 
                 dicConfig["Axis1Min"] = "0";
                 dicConfig["Axis1Mid"] = "90";
@@ -482,6 +494,73 @@ namespace TCPUIClient
                     cbVideoControl.IsChecked = false;
                 }
 
+                if (dicConfig["Axis1Inv"].ToUpper() == "TRUE")
+                {
+                    Axis1Inv = true;
+                    cbAxis1Inv.IsChecked = true;
+                }
+                else
+                {
+                    Axis1Inv = false;
+                    cbAxis1Inv.IsChecked = false;
+                }
+
+                if (dicConfig["Axis2Inv"].ToUpper() == "TRUE")
+                {
+                    Axis2Inv = true;
+                    cbAxis2Inv.IsChecked = true;
+                }
+                else
+                {
+                    Axis2Inv = false;
+                    cbAxis2Inv.IsChecked = false;
+                }
+
+                if (dicConfig["Axis3Inv"].ToUpper() == "TRUE")
+                {
+                    Axis3Inv = true;
+                    cbAxis3Inv.IsChecked = true;
+                }
+                else
+                {
+                    Axis3Inv = false;
+                    cbAxis3Inv.IsChecked = false;
+                }
+
+                if (dicConfig["Axis4Inv"].ToUpper() == "TRUE")
+                {
+                    Axis4Inv = true;
+                    cbAxis4Inv.IsChecked = true;
+                }
+                else
+                {
+                    Axis4Inv = false;
+                    cbAxis4Inv.IsChecked = false;
+                }
+
+                if (dicConfig["Axis5Inv"].ToUpper() == "TRUE")
+                {
+                    Axis5Inv = true;
+                    cbAxis5Inv.IsChecked = true;
+                }
+                else
+                {
+                    Axis5Inv = false;
+                    cbAxis5Inv.IsChecked = false;
+                }
+
+                if (dicConfig["Axis6Inv"].ToUpper() == "TRUE")
+                {
+                    Axis6Inv = true;
+                    cbAxis6Inv.IsChecked = true;
+                }
+                else
+                {
+                    Axis6Inv = false;
+                    cbAxis6Inv.IsChecked = false;
+                }
+
+              
 
 
                 //Set UI
@@ -1070,9 +1149,9 @@ namespace TCPUIClient
 
                         //Axis 1: X, Left right(180) left(0)
                         //Axis 2: Y, Left up(0) down(180)
-                        //Axis 3: Z or Rotation X, Right right(180) left(0)
+                        //Axis 3: Rotation X, Right right(180) left(0) //Legacy Z
                         //Axis 4: Rotation Z or Rotation Y, Left up(0) down(180)
-                        //Axis 5: Slider 0, Left out(0) in(180)
+                        //Axis 5: Z, Left out(0) in(180) //Legacy Slider 0
                         //Axis 6: Slider 1, Right out(0) in(180)
                        
                         switch (ButLabel)
@@ -1092,6 +1171,11 @@ namespace TCPUIClient
                                     ButValDec = Axis1Max;
                                 }
 
+                                if (Axis1Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
+
                                 break;
                             case "Y":
                                 CenterAdjust = Axis2Mid - 90;
@@ -1106,9 +1190,14 @@ namespace TCPUIClient
                                 {
                                     ButValDec = Axis2Max;
                                 }
+
+
+                                if (Axis2Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
                                 break;
-                            case "Z":
-                            case "RotationX":
+                           case "RotationX":
                                 CenterAdjust = Axis3Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1121,8 +1210,14 @@ namespace TCPUIClient
                                 {
                                     ButValDec = Axis3Max;
                                 }
+
+
+                                if (Axis3Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
                                 break;
-                            case "RotationZ":
+                            case "RotationZ": //legacy
                             case "RotationY":
                                 CenterAdjust = Axis4Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
@@ -1136,8 +1231,13 @@ namespace TCPUIClient
                                 {
                                     ButValDec = Axis4Max;
                                 }
+
+                                if (Axis4Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
                                 break;
-                            case "Sliders0":
+                            case "Z":
                                 CenterAdjust = Axis5Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1150,7 +1250,14 @@ namespace TCPUIClient
                                 {
                                     ButValDec = Axis5Max;
                                 }
+                                
+
+                                if (Axis5Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
                                 break;
+
                             case "Sliders1":
                                 CenterAdjust = Axis6Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
@@ -1164,8 +1271,13 @@ namespace TCPUIClient
                                 {
                                     ButValDec = Axis6Max;
                                 }
-                                break;
 
+
+                                if (Axis6Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
+                                break;
 
                         }
 
@@ -2604,11 +2716,45 @@ namespace TCPUIClient
 
         #endregion
 
+        private void cbAxis1Inv_Checked(object sender, RoutedEventArgs e)
+        {
+            Axis1Inv = cbAxis1Inv.IsChecked.Value;
+            dicConfig["Axis1Inv"] = cbAxis1Inv.IsChecked.Value.ToString();
+        }
+
   
+        private void cbAxis2Inv_Checked(object sender, RoutedEventArgs e)
+        {
+            Axis2Inv = cbAxis2Inv.IsChecked.Value;
+            dicConfig["Axis2Inv"] = cbAxis2Inv.IsChecked.Value.ToString();
+        }
+
+        private void cbAxis3Inv_Checked(object sender, RoutedEventArgs e)
+        {
+            Axis3Inv = cbAxis3Inv.IsChecked.Value;
+            dicConfig["Axis3Inv"] = cbAxis3Inv.IsChecked.Value.ToString();
+        }
+
+        private void cbAxis4Inv_Checked(object sender, RoutedEventArgs e)
+        {
+            Axis4Inv = cbAxis4Inv.IsChecked.Value;
+            dicConfig["Axis4Inv"] = cbAxis4Inv.IsChecked.Value.ToString();
+        }
+
+        private void cbAxis5Inv_Checked(object sender, RoutedEventArgs e)
+        {
+            Axis5Inv = cbAxis5Inv.IsChecked.Value;
+            dicConfig["Axis5Inv"] = cbAxis5Inv.IsChecked.Value.ToString();
+        }
+
+        private void cbAxis6Inv_Checked(object sender, RoutedEventArgs e)
+        {
+            Axis6Inv = cbAxis6Inv.IsChecked.Value;
+            dicConfig["Axis6Inv"] = cbAxis6Inv.IsChecked.Value.ToString();
+        }
+
 
         #endregion
-
-
 
     }
 
