@@ -1,7 +1,7 @@
 ﻿<Window x:Name="wnMain" x:Class="TCPUIClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TCP/UDP Socket Client v3.3.0" Height="368.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
+        Title="TCP/UDP Socket Client v3.3.1" Height="368.524" Width="695.621" Icon="Aha-Soft-Desktop-Halloween-Skeleton.ico" Closing="Window_Closing" GotFocus="Window_GotFocus" MouseMove="Window_MouseMove" Activated="Window_Activated" ResizeMode="CanMinimize">
     <Grid Height="341" VerticalAlignment="Top" Initialized="Grid_Initialized" GotFocus="Grid_GotFocus">
         <Grid.Background>
             <ImageBrush ImageSource="black-texture-background-wallpaper-sfv11hls.jpg"/>
@@ -138,12 +138,12 @@
                     <Slider x:Name="slAxis6Max" HorizontalAlignment="Left" Margin="179,156,0,0" VerticalAlignment="Top" Width="71" Maximum="180" SmallChange="1" Value="180" ValueChanged="slAxis6Max_ValueChanged" Height="22"/>
                     <Slider x:Name="slAxis6Min" HorizontalAlignment="Left" Margin="37,157,0,0" VerticalAlignment="Top" Width="71" RenderTransformOrigin="0.436,2.682" SmallChange="1" Maximum="180" ValueChanged="slAxis6Min_ValueChanged" Height="22"/>
                     <Label Content="Inv." HorizontalAlignment="Left" Margin="255,-4,0,0" VerticalAlignment="Top" Foreground="White" Width="28" RenderTransformOrigin="6.175,-0.5" Height="26"/>
-                    <CheckBox x:Name="cbAxis1Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,24,0,0" VerticalAlignment="Top" Width="14" Checked="cbAxis1Inv_Checked"/>
-                    <CheckBox x:Name="cbAxis2Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,51,0,0" VerticalAlignment="Top" Width="14" RenderTransformOrigin="0.429,0.021" Checked="cbAxis2Inv_Checked"/>
-                    <CheckBox x:Name="cbAxis3Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,79,0,0" VerticalAlignment="Top" Width="14" Checked="cbAxis3Inv_Checked"/>
-                    <CheckBox x:Name="cbAxis4Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,106,0,0" VerticalAlignment="Top" Width="14" Checked="cbAxis4Inv_Checked"/>
-                    <CheckBox x:Name="cbAxis5Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,133,0,0" VerticalAlignment="Top" Width="14" RenderTransformOrigin="0.548,2" Checked="cbAxis5Inv_Checked"/>
-                    <CheckBox x:Name="cbAxis6Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,159,0,0" VerticalAlignment="Top" Width="14" RenderTransformOrigin="0.548,2" Checked="cbAxis6Inv_Checked"/>
+                    <CheckBox x:Name="cbAxis1Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,24,0,0" VerticalAlignment="Top" Width="14" Click="cbAxis1Inv_Checked"/>
+                    <CheckBox x:Name="cbAxis2Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,51,0,0" VerticalAlignment="Top" Width="14" RenderTransformOrigin="0.429,0.021" Click="cbAxis2Inv_Checked"/>
+                    <CheckBox x:Name="cbAxis3Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,79,0,0" VerticalAlignment="Top" Width="14" Click="cbAxis3Inv_Checked"/>
+                    <CheckBox x:Name="cbAxis4Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,106,0,0" VerticalAlignment="Top" Width="14" Click="cbAxis4Inv_Checked"/>
+                    <CheckBox x:Name="cbAxis5Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,133,0,0" VerticalAlignment="Top" Width="14" RenderTransformOrigin="0.548,2" Click="cbAxis5Inv_Checked"/>
+                    <CheckBox x:Name="cbAxis6Inv" Content="CheckBox" HorizontalAlignment="Left" Margin="262,159,0,0" VerticalAlignment="Top" Width="14" RenderTransformOrigin="0.548,2" Click="cbAxis6Inv_Checked"/>
 
                 </Grid>
 

@@ -2720,6 +2720,7 @@ namespace TCPUIClient
         {
             Axis1Inv = cbAxis1Inv.IsChecked.Value;
             dicConfig["Axis1Inv"] = cbAxis1Inv.IsChecked.Value.ToString();
+            txStatus.Text = "Axis 1 Inverted: " + Axis1Inv.ToString();
         }
 
   
@@ -2727,34 +2728,45 @@ namespace TCPUIClient
         {
             Axis2Inv = cbAxis2Inv.IsChecked.Value;
             dicConfig["Axis2Inv"] = cbAxis2Inv.IsChecked.Value.ToString();
+            txStatus.Text = "Axis 2 Inverted: " + Axis2Inv.ToString();
         }
 
         private void cbAxis3Inv_Checked(object sender, RoutedEventArgs e)
         {
             Axis3Inv = cbAxis3Inv.IsChecked.Value;
             dicConfig["Axis3Inv"] = cbAxis3Inv.IsChecked.Value.ToString();
+            txStatus.Text = "Axis 3 Inverted: " + Axis3Inv.ToString();
         }
 
         private void cbAxis4Inv_Checked(object sender, RoutedEventArgs e)
         {
             Axis4Inv = cbAxis4Inv.IsChecked.Value;
             dicConfig["Axis4Inv"] = cbAxis4Inv.IsChecked.Value.ToString();
+            txStatus.Text = "Axis 4 Inverted: " + Axis4Inv.ToString();
         }
 
         private void cbAxis5Inv_Checked(object sender, RoutedEventArgs e)
         {
             Axis5Inv = cbAxis5Inv.IsChecked.Value;
             dicConfig["Axis5Inv"] = cbAxis5Inv.IsChecked.Value.ToString();
+            txStatus.Text = "Axis 5 Inverted: " + Axis5Inv.ToString();
         }
 
         private void cbAxis6Inv_Checked(object sender, RoutedEventArgs e)
         {
-            Axis6Inv = cbAxis6Inv.IsChecked.Value;
+           Axis6Inv = cbAxis6Inv.IsChecked.Value;
             dicConfig["Axis6Inv"] = cbAxis6Inv.IsChecked.Value.ToString();
+            txStatus.Text = "Axis 6 Inverted: " + Axis6Inv.ToString();
         }
 
 
         #endregion
+
+        private void cbAxis1Inv_Click(object sender, RoutedEventArgs e)
+        {
+
+
+        }
 
     }
 
