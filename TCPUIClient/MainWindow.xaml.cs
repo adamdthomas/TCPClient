@@ -1158,6 +1158,12 @@ namespace TCPUIClient
                         {
 
                             case "X":
+
+                                if (Axis1Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
+
                                 CenterAdjust = Axis1Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1171,13 +1177,14 @@ namespace TCPUIClient
                                     ButValDec = Axis1Max;
                                 }
 
-                                if (Axis1Inv)
-                                {
-                                    ButValDec = 180 - ButValDec;
-                                }
+    
 
                                 break;
                             case "Y":
+                                if (Axis2Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
                                 CenterAdjust = Axis2Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1191,13 +1198,12 @@ namespace TCPUIClient
                                     ButValDec = Axis2Max;
                                 }
 
-
-                                if (Axis2Inv)
+                                break;
+                           case "RotationX":
+                                if (Axis3Inv)
                                 {
                                     ButValDec = 180 - ButValDec;
                                 }
-                                break;
-                           case "RotationX":
                                 CenterAdjust = Axis3Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1210,15 +1216,15 @@ namespace TCPUIClient
                                 {
                                     ButValDec = Axis3Max;
                                 }
-
-
-                                if (Axis3Inv)
-                                {
-                                    ButValDec = 180 - ButValDec;
-                                }
                                 break;
                             case "RotationZ": //legacy
                             case "RotationY":
+
+                                if (Axis4Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
+
                                 CenterAdjust = Axis4Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1232,12 +1238,13 @@ namespace TCPUIClient
                                     ButValDec = Axis4Max;
                                 }
 
-                                if (Axis4Inv)
+
+                                break;
+                            case "Z":
+                                if (Axis5Inv)
                                 {
                                     ButValDec = 180 - ButValDec;
                                 }
-                                break;
-                            case "Z":
                                 CenterAdjust = Axis5Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1252,13 +1259,14 @@ namespace TCPUIClient
                                 }
                                 
 
-                                if (Axis5Inv)
-                                {
-                                    ButValDec = 180 - ButValDec;
-                                }
+   
                                 break;
 
                             case "Sliders1":
+                                if (Axis6Inv)
+                                {
+                                    ButValDec = 180 - ButValDec;
+                                }
                                 CenterAdjust = Axis6Mid - 90;
                                 ButValDec = ButValDec + CenterAdjust;
 
@@ -1273,10 +1281,7 @@ namespace TCPUIClient
                                 }
 
 
-                                if (Axis6Inv)
-                                {
-                                    ButValDec = 180 - ButValDec;
-                                }
+
                                 break;
 
                         }
