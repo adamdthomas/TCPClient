@@ -189,10 +189,13 @@ namespace TCPUIClient
         private void UpdateLevel(double Level)
         {
             prgLevel.Value = Level;
+            WriteToLog(Level.ToString());
+         
         }
 
         public void StartListening()
         {
+            txStatus.Text = "Listening...";
             Printing = true;
             record();
             Thread test = new Thread(ProcessSample);
@@ -201,8 +204,10 @@ namespace TCPUIClient
 
         public void StopListening()
         {
+            txStatus.Text = "Stopped Listening...";
             waveIn.StopRecording();
             prgLevel.Value = 0;
+            Printing = false;
         }
 
         public void record()
@@ -291,6 +296,7 @@ namespace TCPUIClient
 
                 if (Level != LastLevelSent)
                 {
+
                     tempLevel = Math.Round(Level * 1.8, 0);
                     if (tempLevel > 180)
                     {
@@ -300,6 +306,25 @@ namespace TCPUIClient
                     {
                         tempLevel = 0;
                     }
+
+                    if (Axis5Inv)
+                    {
+                        tempLevel = 180 - tempLevel;
+                    }
+
+
+                    if (tempLevel < Axis5Min)
+                    {
+                        tempLevel = Axis5Min;
+                    }
+
+                    if (tempLevel > Axis1Max)
+                    {
+                        tempLevel = Axis1Max;
+                    }
+
+
+                    WriteToLog(tempLevel.ToString());
 
                     AudioControl = "Audio:" + tempLevel.ToString() + "~"; //RotationZ:84~
                     byte[] msg = Encoding.ASCII.GetBytes(AudioControl);
@@ -596,6 +621,9 @@ namespace TCPUIClient
                 slAxis5Mid.Value = double.Parse(dicConfig["Axis5Mid"]);
                 slAxis5Max.Value = double.Parse(dicConfig["Axis5Max"]);
 
+                prgLevel.Minimum = slAxis5Min.Value;
+                prgLevel.Maximum = slAxis5Max.Value;
+
                 slAxis6Min.Value = double.Parse(dicConfig["Axis6Min"]);
                 slAxis6Mid.Value = double.Parse(dicConfig["Axis6Mid"]);
                 slAxis6Max.Value = double.Parse(dicConfig["Axis6Max"]);
@@ -615,6 +643,8 @@ namespace TCPUIClient
                 txRate = Int32.Parse(dicConfig["txrate"]);
                 Center = Int32.Parse(dicConfig["center"]);
                 KARate = Int32.Parse(dicConfig["karate"]);
+
+
 
             }
             catch (Exception)
@@ -2229,6 +2259,7 @@ namespace TCPUIClient
             Axis5Min = Int32.Parse(Math.Round(slAxis5Min.Value, 0).ToString());
             txStatus.Text = "Axis 5 Min set to: " + Math.Round(slAxis5Min.Value, 0).ToString();
             dicConfig["Axis5Min"] = Math.Round(slAxis5Min.Value, 0).ToString();
+            prgLevel.Minimum = Axis5Min;
 
         }
 
@@ -2365,6 +2396,7 @@ namespace TCPUIClient
             Axis5Max = Int32.Parse(Math.Round(slAxis5Max.Value, 0).ToString());
             txStatus.Text = "Axis 5 Max set to: " + Math.Round(slAxis5Max.Value, 0).ToString();
             dicConfig["Axis5Max"] = Math.Round(slAxis5Max.Value, 0).ToString();
+            prgLevel.Maximum = Axis5Max;
         }
 
         private void slAxis6Max_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -2378,6 +2410,10 @@ namespace TCPUIClient
         #region Not Used
 
         private void cbGamepadType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+        }
+
+        private void cbAxis1Inv_Click(object sender, RoutedEventArgs e)
         {
         }
 
@@ -2767,11 +2803,6 @@ namespace TCPUIClient
 
         #endregion
 
-        private void cbAxis1Inv_Click(object sender, RoutedEventArgs e)
-        {
-
-
-        }
 
     }
 
